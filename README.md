@@ -733,14 +733,14 @@ reporter.track_remediation(vulnerability.id)
 ```bibtex
 @article{neural_operator_sca2025,
   title={Neural Operators for Side-Channel Analysis of Post-Quantum Cryptography},
-  author={Your Name et al.},
+  author={Daniel Schmidt},
   journal={Journal of Cryptographic Engineering},
   year={2025}
 }
 
 @inproceedings{adaptive_pqc_attacks2024,
   title={Adaptive Neural Attacks on Masked Post-Quantum Implementations},
-  author={Your Team},
+  author={Daniel Schmidt},
   booktitle={CHES},
   year={2024}
 }
