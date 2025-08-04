@@ -1,0 +1,157 @@
+version: '3.8'
+
+services:
+  # Development environment
+  neural-crypto-dev:
+    build:
+      context: .
+      target: development
+    container_name: neural-crypto-dev
+    volumes:
+      - .:/app
+      - neural-crypto-cache:/app/.cache
+    environment:
+      - PYTHONPATH=/app/src
+      - NEURAL_CRYPTO_LOG_LEVEL=DEBUG
+      - NEURAL_CRYPTO_DATA_DIR=/app/data
+    ports:
+      - "8000:8000"
+    networks:
+      - neural-crypto-net
+    profiles:
+      - dev
+
+  # Research environment with Jupyter
+  neural-crypto-research:
+    build:
+      context: .
+      target: research
+    container_name: neural-crypto-research
+    volumes:
+      - .:/app
+      - neural-crypto-data:/app/data
+      - neural-crypto-notebooks:/app/notebooks
+      - neural-crypto-results:/app/results
+    environment:
+      - PYTHONPATH=/app/src
+      - JUPYTER_ENABLE_LAB=yes
+      - NEURAL_CRYPTO_LOG_LEVEL=INFO
+    ports:
+      - "8888:8888"
+      - "6006:6006"  # TensorBoard
+    networks:
+      - neural-crypto-net
+    profiles:
+      - research
+
+  # Production environment
+  neural-crypto-prod:
+    build:
+      context: .
+      target: production
+    container_name: neural-crypto-prod
+    volumes:
+      - neural-crypto-data:/app/data:ro
+      - neural-crypto-results:/app/results
+      - neural-crypto-logs:/app/logs
+    environment:
+      - PYTHONPATH=/app/src
+      - NEURAL_CRYPTO_LOG_LEVEL=INFO
+      - NEURAL_CRYPTO_AUDIT_LOGGING=true
+      - NEURAL_CRYPTO_REQUIRE_AUTHORIZATION=true
+    restart: unless-stopped
+    networks:
+      - neural-crypto-net
+    profiles:
+      - prod
+
+  # Database for experiment tracking (optional)
+  neural-crypto-db:
+    image: postgres:15-alpine
+    container_name: neural-crypto-db
+    environment:
+      - POSTGRES_DB=cryptanalysis
+      - POSTGRES_USER=crypto_user
+      - POSTGRES_PASSWORD=secure_password_change_in_production
+    volumes:
+      - neural-crypto-db-data:/var/lib/postgresql/data
+    networks:
+      - neural-crypto-net
+    profiles:
+      - db
+      - research
+      - prod
+
+  # Redis for caching (optional)
+  neural-crypto-redis:
+    image: redis:7-alpine
+    container_name: neural-crypto-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - neural-crypto-redis-data:/data
+    networks:
+      - neural-crypto-net
+    profiles:
+      - cache
+      - prod
+
+  # Monitoring with Prometheus (optional)
+  neural-crypto-prometheus:
+    image: prom/prometheus:latest
+    container_name: neural-crypto-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - neural-crypto-prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - neural-crypto-net
+    profiles:
+      - monitoring
+
+  # Grafana for visualization (optional)
+  neural-crypto-grafana:
+    image: grafana/grafana:latest
+    container_name: neural-crypto-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin_change_in_production
+    volumes:
+      - neural-crypto-grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    networks:
+      - neural-crypto-net
+    profiles:
+      - monitoring
+
+volumes:
+  neural-crypto-cache:
+    driver: local
+  neural-crypto-data:
+    driver: local
+  neural-crypto-notebooks:
+    driver: local
+  neural-crypto-results:
+    driver: local
+  neural-crypto-logs:
+    driver: local
+  neural-crypto-db-data:
+    driver: local
+  neural-crypto-redis-data:
+    driver: local
+  neural-crypto-prometheus-data:
+    driver: local
+  neural-crypto-grafana-data:
+    driver: local
+
+networks:
+  neural-crypto-net:
+    driver: bridge
