@@ -37,24 +37,37 @@ __author__ = "Terragon Labs"
 __email__ = "research@terragonlabs.com"
 __license__ = "GPL-3.0"
 
-# Core imports for convenience
-from .neural_operators import NeuralOperatorBase
-from .side_channels import SideChannelAnalyzer
-from .utils import config, logging_utils
-
-# Main API classes
-from .core import NeuralSCA, LeakageSimulator
-
+# Try to import core components, handle missing dependencies gracefully
 __all__ = [
     "__version__",
     "__author__", 
     "__email__",
     "__license__",
-    "NeuralSCA",
-    "LeakageSimulator",
-    "NeuralOperatorBase",
-    "SideChannelAnalyzer",
 ]
+
+try:
+    # Core imports for convenience
+    from .neural_operators import NeuralOperatorBase
+    from .side_channels import SideChannelAnalyzer
+    from .utils import config, logging_utils
+
+    # Main API classes
+    from .core import NeuralSCA, LeakageSimulator
+
+    __all__.extend([
+        "NeuralSCA",
+        "LeakageSimulator", 
+        "NeuralOperatorBase",
+        "SideChannelAnalyzer",
+    ])
+
+except ImportError as e:
+    import warnings
+    warnings.warn(
+        f"Some neural-cryptanalysis components could not be imported: {e}\n"
+        "Install all dependencies with: pip install neural-operator-cryptanalysis[all]",
+        ImportWarning
+    )
 
 # Responsible use notice
 def _show_responsible_use_notice() -> None:
