@@ -1,0 +1,153 @@
+{
+  "timestamp": 1754719271.144519,
+  "overall_passed": "True",
+  "overall_score": 1.0,
+  "results": [
+    {
+      "name": "Security & Responsible Use",
+      "passed": true,
+      "score": 1.0,
+      "critical": true,
+      "execution_time": 0.0031091490000108024,
+      "details": {
+        "responsible_notice": true,
+        "defensive_focus": true,
+        "ethics_section": true,
+        "security_warnings": 1,
+        "has_license": true,
+        "score_breakdown": {
+          "responsible_notice": 25,
+          "defensive_focus": 25,
+          "ethics_section": 20,
+          "security_warnings": 20,
+          "license": 10
+        }
+      }
+    },
+    {
+      "name": "Malicious Code Scan",
+      "passed": true,
+      "score": 1.0,
+      "critical": true,
+      "execution_time": 0.012397691000160194,
+      "details": {
+        "scanned_files": 46,
+        "total_violations": 27,
+        "filtered_violations": 0,
+        "violations": []
+      }
+    },
+    {
+      "name": "Core Functionality",
+      "passed": true,
+      "score": 1.0,
+      "critical": true,
+      "execution_time": 8.64362296000013,
+      "details": {
+        "basic_functionality": true,
+        "robustness_features": true,
+        "total_tests_passed": 2
+      }
+    },
+    {
+      "name": "Error Handling",
+      "passed": true,
+      "score": 1.0,
+      "critical": false,
+      "execution_time": 0.004859579999902053,
+      "details": {
+        "error_tests": [
+          {
+            "test": "empty_data",
+            "passed": true
+          },
+          {
+            "test": "mismatched_labels",
+            "passed": true
+          },
+          {
+            "test": "config_validation",
+            "passed": true
+          },
+          {
+            "test": "invalid_trace_data",
+            "passed": true
+          }
+        ],
+        "passed_tests": 4,
+        "total_tests": 4
+      }
+    },
+    {
+      "name": "Simulation Performance",
+      "passed": true,
+      "score": 1.0,
+      "critical": false,
+      "execution_time": 0.021538990999943053,
+      "details": {
+        "results": [
+          {
+            "test": "small_batch",
+            "n_traces": 100,
+            "trace_length": 1000,
+            "time": 0.0032671369999661692,
+            "throughput": 30607.83799425475,
+            "requirement": 1000,
+            "passed": true
+          },
+          {
+            "test": "medium_batch",
+            "n_traces": 1000,
+            "trace_length": 1000,
+            "time": 0.017247252000061053,
+            "throughput": 57980.25099862054,
+            "requirement": 500,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Memory Efficiency",
+      "passed": true,
+      "score": 1.0,
+      "critical": false,
+      "execution_time": 0.28423491099988496,
+      "details": {
+        "estimated_memory_mb": 19.074440002441406,
+        "trace_shape": [
+          1000,
+          5000
+        ],
+        "operations_successful": true
+      }
+    },
+    {
+      "name": "Documentation",
+      "passed": true,
+      "score": 1.0,
+      "critical": false,
+      "execution_time": 0.0026526679998823965,
+      "details": {
+        "documentation_scores": {
+          "readme_exists": true,
+          "has_installation": true,
+          "has_usage": true,
+          "has_features": true,
+          "has_architecture": true,
+          "readme_length": true,
+          "has_contributing.md": true,
+          "has_security.md": true,
+          "has_changelog.md": true,
+          "has_deployment.md": true,
+          "has_license": true,
+          "code_documentation_ratio": 1.0
+        },
+        "total_score": 110.0,
+        "max_score": 110,
+        "python_files_count": 29,
+        "documented_files_count": 29
+      }
+    }
+  ]
+}
