@@ -1,0 +1,80 @@
+{
+  "total_issues": 9,
+  "critical_issues": 0,
+  "high_issues": 0,
+  "medium_issues": 9,
+  "issues": [
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 11,
+      "message": "Unregistered external dependency: neural_operators",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 12,
+      "message": "Unregistered external dependency: neural_operators.fno",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 13,
+      "message": "Unregistered external dependency: neural_operators.deeponet",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 14,
+      "message": "Unregistered external dependency: neural_operators.custom",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 15,
+      "message": "Unregistered external dependency: side_channels",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 16,
+      "message": "Unregistered external dependency: utils.config",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 17,
+      "message": "Unregistered external dependency: utils.errors",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 22,
+      "message": "Unregistered external dependency: utils.validation",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 26,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/core.py"
+    }
+  ]
+}

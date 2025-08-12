@@ -1,0 +1,244 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: neural-crypto-api
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: api
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: neural-crypto-worker
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: worker
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: neural-crypto-monitoring
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: monitoring
+automountServiceAccountToken: true
+---
+# Role for API service account - minimal permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: neural-cryptanalysis
+  name: neural-crypto-api-role
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+rules:
+# ConfigMap access for configuration
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: ["neural-crypto-config"]
+# Secret access for database credentials (read-only)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["neural-crypto-secrets"]
+# Pod information for health checks
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+  resourceNames: []
+# Events for logging
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# Role for worker service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: neural-cryptanalysis
+  name: neural-crypto-worker-role
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+rules:
+# ConfigMap access for configuration
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Secret access for credentials
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["neural-crypto-secrets"]
+# Pod management for scaling
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "create", "delete"]
+# Job management
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "create", "update", "delete"]
+# Events for logging
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# Cluster role for monitoring service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: neural-crypto-monitoring-role
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+rules:
+# Metrics collection
+- apiGroups: [""]
+  resources:
+    - nodes
+    - nodes/proxy
+    - nodes/metrics
+    - services
+    - endpoints
+    - pods
+    - ingresses
+    - configmaps
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources:
+    - ingresses
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources:
+    - ingresses
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources:
+    - jobs
+    - cronjobs
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["autoscaling"]
+  resources:
+    - horizontalpodautoscalers
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["policy"]
+  resources:
+    - poddisruptionbudgets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["storage.k8s.io"]
+  resources:
+    - storageclasses
+    - volumeattachments
+  verbs: ["get", "list", "watch"]
+---
+# Bind API role to API service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: neural-crypto-api-binding
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: neural-crypto-api
+  namespace: neural-cryptanalysis
+roleRef:
+  kind: Role
+  name: neural-crypto-api-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Bind worker role to worker service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: neural-crypto-worker-binding
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: neural-crypto-worker
+  namespace: neural-cryptanalysis
+roleRef:
+  kind: Role
+  name: neural-crypto-worker-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Bind monitoring cluster role to monitoring service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: neural-crypto-monitoring-binding
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: neural-crypto-monitoring
+  namespace: neural-cryptanalysis
+roleRef:
+  kind: ClusterRole
+  name: neural-crypto-monitoring-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Security context constraints for OpenShift
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: neural-crypto-scc
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: security
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: false
+allowPrivilegedContainer: false
+allowedCapabilities: []
+defaultAddCapabilities: []
+fsGroup:
+  type: MustRunAs
+  ranges:
+    - min: 1000
+      max: 2000
+readOnlyRootFilesystem: true
+requiredDropCapabilities:
+  - ALL
+runAsUser:
+  type: MustRunAsNonRoot
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: MustRunAs
+  ranges:
+    - min: 1000
+      max: 2000
+users:
+  - system:serviceaccount:neural-cryptanalysis:neural-crypto-api
+  - system:serviceaccount:neural-cryptanalysis:neural-crypto-worker
+volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - persistentVolumeClaim
+  - projected
+  - secret

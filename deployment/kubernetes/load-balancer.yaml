@@ -1,0 +1,362 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: neural-crypto-api-lb
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: load-balancer
+  annotations:
+    # AWS Load Balancer Controller annotations
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/health"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval-seconds: "10"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-timeout-seconds: "6"
+    service.beta.kubernetes.io/aws-load-balancer-healthy-threshold-count: "2"
+    service.beta.kubernetes.io/aws-load-balancer-unhealthy-threshold-count: "2"
+    service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-12345,subnet-67890"
+    service.beta.kubernetes.io/aws-load-balancer-security-groups: "sg-neural-crypto-lb"
+    # Preserve client IP
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    # Enable access logs
+    service.beta.kubernetes.io/aws-load-balancer-access-log-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-name: "neural-crypto-access-logs"
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-prefix: "nlb"
+    # Connection draining
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
+    # Target group attributes
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: |
+      deregistration_delay.timeout_seconds=30,
+      preserve_client_ip.enabled=true,
+      proxy_protocol_v2.enabled=true,
+      stickiness.enabled=false
+spec:
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+    # Restrict access to specific IP ranges
+    - "10.0.0.0/8"      # Internal corporate network
+    - "172.16.0.0/12"   # Internal VPC ranges
+    - "192.168.0.0/16"  # Internal development ranges
+    # Add specific public IP ranges as needed
+  ports:
+  - port: 443
+    targetPort: 8000
+    protocol: TCP
+    name: https
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: api
+  sessionAffinity: None
+  externalTrafficPolicy: Local  # Preserve source IP
+---
+# Application Load Balancer for HTTP/HTTPS traffic
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: neural-crypto-alb
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: load-balancer
+  annotations:
+    # AWS Load Balancer Controller annotations for ALB
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: neural-crypto-alb
+    alb.ingress.kubernetes.io/group.name: neural-crypto
+    
+    # SSL/TLS configuration
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-2017-01
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    
+    # Health checks
+    alb.ingress.kubernetes.io/healthcheck-enabled: 'true'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/healthcheck-grace-period-seconds: '60'
+    
+    # Load balancer attributes
+    alb.ingress.kubernetes.io/load-balancer-attributes: |
+      routing.http2.enabled=true,
+      idle_timeout.timeout_seconds=60,
+      deletion_protection.enabled=true,
+      access_logs.s3.enabled=true,
+      access_logs.s3.bucket=neural-crypto-access-logs,
+      access_logs.s3.prefix=alb
+    
+    # Target group attributes
+    alb.ingress.kubernetes.io/target-group-attributes: |
+      deregistration_delay.timeout_seconds=30,
+      slow_start.duration_seconds=30,
+      load_balancing.algorithm.type=least_outstanding_requests,
+      stickiness.enabled=false
+    
+    # Security groups
+    alb.ingress.kubernetes.io/security-groups: sg-neural-crypto-alb
+    alb.ingress.kubernetes.io/manage-backend-security-group-rules: 'true'
+    
+    # WAF integration
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-west-2:123456789012:regional/webacl/neural-crypto-waf/12345678-1234-1234-1234-123456789012
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-burst: "50"
+    nginx.ingress.kubernetes.io/rate-limit-connections-per-ip: "10"
+    
+    # Connection limits
+    alb.ingress.kubernetes.io/target-group-attributes: |
+      stickiness.enabled=false,
+      deregistration_delay.timeout_seconds=30,
+      slow_start.duration_seconds=30
+spec:
+  tls:
+  - hosts:
+    - neural-crypto.yourdomain.com
+    - api.neural-crypto.yourdomain.com
+    secretName: neural-crypto-tls
+  rules:
+  - host: neural-crypto.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: neural-crypto-api
+            port:
+              number: 80
+  - host: api.neural-crypto.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: neural-crypto-api
+            port:
+              number: 80
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: neural-crypto-api
+            port:
+              number: 80
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: neural-crypto-api
+            port:
+              number: 80
+---
+# Service for internal load balancing
+apiVersion: v1
+kind: Service
+metadata:
+  name: neural-crypto-api-internal
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: load-balancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: api
+  selector:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: api
+  sessionAffinity: None
+---
+# EndpointSlice for advanced load balancing
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: neural-crypto-api-endpoints
+  namespace: neural-cryptanalysis
+  labels:
+    kubernetes.io/service-name: neural-crypto-api
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: load-balancer
+addressType: IPv4
+ports:
+- name: api
+  protocol: TCP
+  port: 8000
+endpoints: []  # Will be populated automatically by the endpoint controller
+---
+# Service Monitor for Prometheus scraping
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: neural-crypto-load-balancer
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: load-balancer
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: neural-cryptanalysis
+      app.kubernetes.io/component: load-balancer
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+---
+# ProxySQL for database load balancing (if using multiple DB instances)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neural-crypto-proxysql
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: neural-cryptanalysis
+      app.kubernetes.io/component: proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: neural-cryptanalysis
+        app.kubernetes.io/component: proxy
+    spec:
+      containers:
+      - name: proxysql
+        image: proxysql/proxysql:2.4.0
+        ports:
+        - containerPort: 6033
+          name: mysql
+        - containerPort: 6032
+          name: admin
+        - containerPort: 6080
+          name: restapi
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: neural-crypto-database-credentials
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: proxysql-config
+          mountPath: /etc/proxysql.cnf
+          subPath: proxysql.cnf
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        livenessProbe:
+          tcpSocket:
+            port: 6033
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 6033
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: proxysql-config
+        configMap:
+          name: neural-crypto-proxysql-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neural-crypto-proxysql-config
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: proxy
+data:
+  proxysql.cnf: |
+    datadir="/var/lib/proxysql"
+    
+    admin_variables=
+    {
+        admin_credentials="admin:admin"
+        mysql_ifaces="0.0.0.0:6032"
+        restapi_enabled=true
+        restapi_port=6080
+    }
+    
+    mysql_variables=
+    {
+        threads=4
+        max_connections=2048
+        default_query_delay=0
+        default_query_timeout=36000000
+        have_compress=true
+        poll_timeout=2000
+        interfaces="0.0.0.0:6033"
+        default_schema="information_schema"
+        stacksize=1048576
+        server_version="8.0.0"
+        connect_timeout_server=3000
+        monitor_username="monitor"
+        monitor_password="monitor"
+        monitor_history=600000
+        monitor_connect_interval=60000
+        monitor_ping_interval=10000
+        ping_interval_server_msec=120000
+        ping_timeout_server=500
+        commands_stats=true
+        sessions_sort=true
+        connect_retries_on_failure=10
+    }
+    
+    mysql_servers =
+    (
+        {
+            address = "neural-crypto-postgresql"
+            port = 5432
+            hostgroup = 0
+            weight = 900
+            status = "ONLINE"
+            compression = 0
+            max_connections = 1000
+            max_replication_lag = 10
+            use_ssl = 0
+            max_latency_ms = 0
+            comment = "Primary PostgreSQL"
+        }
+    )
+    
+    mysql_query_rules=
+    (
+        {
+            rule_id=1
+            active=1
+            match_pattern="^SELECT.*"
+            destination_hostgroup=0
+            apply=1
+        }
+    )

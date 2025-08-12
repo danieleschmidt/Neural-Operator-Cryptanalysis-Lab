@@ -3,7 +3,8 @@
 import time
 import json
 import threading
-from typing import Dict, List, Any, Optional, Callable
+import functools
+from typing import Dict, List, Any, Optional, Callable, Union
 from datetime import datetime, timedelta
 from pathlib import Path
 from dataclasses import dataclass, asdict
@@ -642,3 +643,345 @@ class HealthMonitor:
             }
         except ImportError:
             return {}
+
+
+class StatusEndpoint:
+    """HTTP-like status endpoint for monitoring."""
+    
+    def __init__(self, metrics_collector: MetricsCollector, health_monitor: HealthMonitor):
+        self.metrics = metrics_collector
+        self.health = health_monitor
+        
+    def get_status(self) -> Dict[str, Any]:
+        """Get comprehensive system status."""
+        health_status = self.health.get_health_status()
+        metrics_summary = self.metrics.get_all_metrics(window_minutes=5)
+        
+        return {
+            'status': health_status['overall_status'],
+            'timestamp': datetime.now().isoformat(),
+            'version': '2.0.0',  # Neural cryptanalysis framework version
+            'uptime_seconds': time.time() - getattr(self, '_start_time', time.time()),
+            'health': health_status,
+            'metrics': {
+                'recent_metrics': metrics_summary,
+                'metric_count': len(self.metrics.metrics_buffer),
+                'buffer_utilization': len(self.metrics.metrics_buffer) / self.metrics.buffer_size
+            },
+            'system': self.health._get_system_metrics()
+        }
+    
+    def get_metrics(self, format_type: str = 'json') -> Union[str, Dict[str, Any]]:
+        """Get metrics in specified format."""
+        if format_type == 'prometheus':
+            return self.metrics.export_prometheus_format()
+        else:
+            return self.metrics.get_all_metrics(window_minutes=60)
+    
+    def get_health(self) -> Dict[str, Any]:
+        """Get health check results."""
+        return self.health.get_health_status()
+
+
+class ResourceTracker:
+    """Advanced resource usage tracking."""
+    
+    def __init__(self, metrics_collector: MetricsCollector):
+        self.metrics = metrics_collector
+        self.baseline_resources = None
+        self.peak_resources = {}
+        self.resource_history = deque(maxlen=1000)
+        
+        # Initialize baseline
+        self._record_baseline()
+        
+    def _record_baseline(self):
+        """Record baseline resource usage."""
+        try:
+            import psutil
+            
+            self.baseline_resources = {
+                'memory_mb': psutil.virtual_memory().used / 1024**2,
+                'cpu_percent': psutil.cpu_percent(),
+                'num_threads': psutil.Process().num_threads(),
+                'open_files': len(psutil.Process().open_files())
+            }
+            
+            logger.info(f"Baseline resources recorded: {self.baseline_resources}")
+            
+        except ImportError:
+            self.baseline_resources = {}
+    
+    def track_operation(self, operation_name: str):
+        """Context manager to track resource usage during operation."""
+        class OperationTracker:
+            def __init__(self, tracker, name):
+                self.tracker = tracker
+                self.name = name
+                self.start_resources = None
+                self.start_time = None
+                
+            def __enter__(self):
+                self.start_time = time.time()
+                self.start_resources = self.tracker._get_current_resources()
+                return self
+                
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                end_time = time.time()
+                end_resources = self.tracker._get_current_resources()
+                duration = end_time - self.start_time
+                
+                # Calculate resource deltas
+                resource_delta = {}
+                if self.start_resources and end_resources:
+                    for key in self.start_resources:
+                        if key in end_resources:
+                            resource_delta[key] = end_resources[key] - self.start_resources[key]
+                
+                # Record metrics
+                operation_tags = {'operation': self.name}
+                self.tracker.metrics.timing('operation_duration', duration, operation_tags)
+                
+                for resource, delta in resource_delta.items():
+                    self.tracker.metrics.record(f'resource_delta_{resource}', delta, operation_tags)
+                
+                # Update peaks
+                for resource, value in end_resources.items():
+                    current_peak = self.tracker.peak_resources.get(resource, 0)
+                    if value > current_peak:
+                        self.tracker.peak_resources[resource] = value
+                        self.tracker.metrics.gauge(f'peak_{resource}', value)
+                
+                # Store in history
+                self.tracker.resource_history.append({
+                    'timestamp': end_time,
+                    'operation': self.name,
+                    'duration': duration,
+                    'resources': end_resources,
+                    'deltas': resource_delta
+                })
+                
+                logger.debug(f"Operation '{self.name}' completed in {duration:.3f}s, "
+                           f"resource deltas: {resource_delta}")
+        
+        return OperationTracker(self, operation_name)
+    
+    def _get_current_resources(self) -> Dict[str, float]:
+        """Get current resource usage."""
+        try:
+            import psutil
+            process = psutil.Process()
+            
+            return {
+                'memory_mb': process.memory_info().rss / 1024**2,
+                'cpu_percent': process.cpu_percent(),
+                'num_threads': process.num_threads(),
+                'open_files': len(process.open_files()),
+                'memory_percent': psutil.virtual_memory().percent
+            }
+        except ImportError:
+            return {}
+    
+    def get_resource_summary(self) -> Dict[str, Any]:
+        """Get resource usage summary."""
+        current = self._get_current_resources()
+        
+        summary = {
+            'current': current,
+            'baseline': self.baseline_resources,
+            'peaks': self.peak_resources,
+            'deltas_from_baseline': {}
+        }
+        
+        # Calculate deltas from baseline
+        if self.baseline_resources and current:
+            for key in self.baseline_resources:
+                if key in current:
+                    summary['deltas_from_baseline'][key] = current[key] - self.baseline_resources[key]
+        
+        # Recent history statistics
+        if self.resource_history:
+            recent_operations = list(self.resource_history)[-100:]  # Last 100 operations
+            
+            durations = [op['duration'] for op in recent_operations]
+            memory_usage = [op['resources'].get('memory_mb', 0) for op in recent_operations]
+            
+            summary['recent_stats'] = {
+                'avg_operation_duration': statistics.mean(durations) if durations else 0,
+                'avg_memory_usage': statistics.mean(memory_usage) if memory_usage else 0,
+                'operation_count': len(recent_operations)
+            }
+        
+        return summary
+
+
+class PerformanceProfiler:
+    """Performance profiling and analysis."""
+    
+    def __init__(self, metrics_collector: MetricsCollector):
+        self.metrics = metrics_collector
+        self.profiles = {}
+        self.active_profiles = {}
+        
+    def profile_function(self, name: str = None):
+        """Decorator to profile function performance."""
+        def decorator(func):
+            profile_name = name or f"{func.__module__}.{func.__name__}"
+            
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return self.profile_execution(profile_name, func, *args, **kwargs)
+            
+            return wrapper
+        return decorator
+    
+    def profile_execution(self, name: str, func: Callable, *args, **kwargs) -> Any:
+        """Profile function execution."""
+        import cProfile
+        import pstats
+        from io import StringIO
+        
+        # Start profiling
+        profiler = cProfile.Profile()
+        profiler.enable()
+        
+        start_time = time.time()
+        start_memory = self._get_memory_usage()
+        
+        try:
+            result = func(*args, **kwargs)
+            success = True
+        except Exception as e:
+            success = False
+            raise
+        finally:
+            # Stop profiling
+            profiler.disable()
+            
+            end_time = time.time()
+            end_memory = self._get_memory_usage()
+            
+            duration = end_time - start_time
+            memory_delta = end_memory - start_memory if start_memory and end_memory else 0
+            
+            # Generate profile stats
+            stats_stream = StringIO()
+            stats = pstats.Stats(profiler, stream=stats_stream)
+            stats.sort_stats('cumulative')
+            stats.print_stats(20)  # Top 20 functions
+            
+            profile_data = {
+                'name': name,
+                'timestamp': end_time,
+                'duration': duration,
+                'memory_delta_mb': memory_delta,
+                'success': success,
+                'stats': stats_stream.getvalue()
+            }
+            
+            # Store profile
+            if name not in self.profiles:
+                self.profiles[name] = deque(maxlen=100)
+            self.profiles[name].append(profile_data)
+            
+            # Record metrics
+            profile_tags = {'function': name, 'success': str(success)}
+            self.metrics.timing('function_duration', duration, profile_tags)
+            self.metrics.record('function_memory_delta', memory_delta, profile_tags, 'MB')
+            
+            logger.debug(f"Profiled {name}: {duration:.3f}s, memory delta: {memory_delta:.1f}MB")
+        
+        return result
+    
+    def _get_memory_usage(self) -> Optional[float]:
+        """Get current memory usage in MB."""
+        try:
+            import psutil
+            return psutil.Process().memory_info().rss / 1024**2
+        except ImportError:
+            return None
+    
+    def get_profile_summary(self, name: str = None) -> Dict[str, Any]:
+        """Get profiling summary."""
+        if name:
+            if name not in self.profiles:
+                return {}
+            
+            profiles = list(self.profiles[name])
+            
+            durations = [p['duration'] for p in profiles]
+            memory_deltas = [p['memory_delta_mb'] for p in profiles]
+            success_rate = sum(1 for p in profiles if p['success']) / len(profiles)
+            
+            return {
+                'function': name,
+                'execution_count': len(profiles),
+                'avg_duration': statistics.mean(durations) if durations else 0,
+                'min_duration': min(durations) if durations else 0,
+                'max_duration': max(durations) if durations else 0,
+                'avg_memory_delta': statistics.mean(memory_deltas) if memory_deltas else 0,
+                'success_rate': success_rate,
+                'recent_executions': profiles[-10:] if profiles else []
+            }
+        else:
+            # Summary for all profiles
+            summary = {}
+            for profile_name in self.profiles:
+                summary[profile_name] = self.get_profile_summary(profile_name)
+            return summary
+
+
+# Enhanced health checks
+def register_neural_operator_health_checks(health_monitor: HealthMonitor,
+                                         neural_operator_instance=None):
+    """Register health checks specific to neural operator components."""
+    
+    def check_model_loaded():
+        """Check if neural operator model is loaded."""
+        if neural_operator_instance is None:
+            return True  # No model to check
+        
+        try:
+            # Check if model has parameters
+            if hasattr(neural_operator_instance, 'parameters'):
+                param_count = sum(p.numel() for p in neural_operator_instance.parameters())
+                return param_count > 0
+            return True
+        except Exception:
+            return False
+    
+    def check_gpu_availability():
+        """Check GPU availability for PyTorch."""
+        try:
+            import torch
+            return torch.cuda.is_available()
+        except ImportError:
+            return True  # Not using PyTorch
+    
+    def check_data_integrity():
+        """Check data directory integrity."""
+        # This could check for corrupted data files, missing datasets, etc.
+        return True  # Simplified for now
+    
+    def check_dependencies():
+        """Check critical dependencies."""
+        try:
+            import numpy
+            import torch
+            return True
+        except ImportError:
+            return False
+    
+    # Register health checks
+    health_monitor.register_health_check('model_loaded', check_model_loaded)
+    health_monitor.register_health_check('gpu_available', check_gpu_availability)
+    health_monitor.register_health_check('data_integrity', check_data_integrity)
+    health_monitor.register_health_check('dependencies', check_dependencies)
+
+
+# Global instances for enhanced monitoring
+enhanced_metrics = MetricsCollector(buffer_size=50000, flush_interval=30)
+enhanced_health = HealthMonitor(enhanced_metrics, check_interval=15)
+resource_tracker = ResourceTracker(enhanced_metrics)
+performance_profiler = PerformanceProfiler(enhanced_metrics)
+status_endpoint = StatusEndpoint(enhanced_metrics, enhanced_health)

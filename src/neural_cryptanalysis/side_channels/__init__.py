@@ -12,7 +12,7 @@ Components:
 - Preprocessing: Signal conditioning and feature extraction
 """
 
-from .base import SideChannelAnalyzer, AnalysisConfig, LeakageModel
+from .base import SideChannelAnalyzer, AnalysisConfig, LeakageModel, TraceData
 from .power import PowerAnalyzer, CPAnalyzer, DPAnalyzer
 from .electromagnetic import EMAnalyzer, NearFieldEM, FarFieldEM
 from .acoustic import AcousticAnalyzer, SoundBasedAttack
@@ -24,6 +24,7 @@ __all__ = [
     "SideChannelAnalyzer",
     "AnalysisConfig", 
     "LeakageModel",
+    "TraceData",
     "PowerAnalyzer",
     "CPAnalyzer",
     "DPAnalyzer", 

@@ -1,0 +1,112 @@
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: neural-crypto-restricted
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: security
+spec:
+  # Privilege escalation
+  allowPrivilegeEscalation: false
+  defaultAllowPrivilegeEscalation: false
+  
+  # Required to prevent escalations to root
+  requiredDropCapabilities:
+    - ALL
+  
+  # Allow specific capabilities if needed
+  allowedCapabilities: []
+  
+  # Require running as non-root user
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  
+  # Require specific user ID
+  runAsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 2000
+  
+  # Supplemental groups
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 2000
+  
+  # File system
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 2000
+  
+  # Read-only root filesystem
+  readOnlyRootFilesystem: true
+  
+  # Volumes
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  
+  # Host network/IPC/PID
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  hostPorts: []
+  
+  # SELinux
+  seLinux:
+    rule: 'RunAsAny'
+  
+  # AppArmor
+  annotations:
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+  
+  # Seccomp
+  seccomp:
+    defaultProfileName: 'runtime/default'
+    allowedProfileNames:
+      - 'runtime/default'
+  
+  # Forbidden sysctls
+  forbiddenSysctls:
+    - '*'
+  
+  # Allowed unsafe sysctls (none for security)
+  allowedUnsafeSysctls: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: neural-crypto-psp-user
+spec:
+  rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+    - neural-crypto-restricted
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: neural-crypto-psp-binding
+roleRef:
+  kind: ClusterRole
+  name: neural-crypto-psp-user
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: neural-crypto-api
+  namespace: neural-cryptanalysis
+- kind: ServiceAccount
+  name: neural-crypto-worker
+  namespace: neural-cryptanalysis

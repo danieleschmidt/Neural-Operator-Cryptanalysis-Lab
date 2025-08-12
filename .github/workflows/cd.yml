@@ -1,0 +1,378 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      force_deploy:
+        description: 'Force deployment (skip quality gates)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Pre-deployment checks
+  pre-deployment:
+    name: Pre-deployment Checks
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.determine-env.outputs.environment }}
+      version: ${{ steps.version.outputs.version }}
+      should_deploy: ${{ steps.checks.outputs.should_deploy }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Determine environment
+      id: determine-env
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "environment=staging" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          echo "environment=production" >> $GITHUB_OUTPUT
+        else
+          echo "environment=staging" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Generate version
+      id: version
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+          echo "version=sha-${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run pre-deployment checks
+      id: checks
+      run: |
+        # Check if CI passed
+        if [[ "${{ github.event.inputs.force_deploy }}" == "true" ]]; then
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        
+        # Get latest CI run for this commit
+        ci_status=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }}/status --jq '.state')
+        
+        if [[ "$ci_status" == "success" ]]; then
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+        else
+          echo "should_deploy=false" >> $GITHUB_OUTPUT
+          echo "CI checks failed or are pending"
+          exit 1
+        fi
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Deploy to staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [pre-deployment]
+    if: needs.pre-deployment.outputs.should_deploy == 'true' && (needs.pre-deployment.outputs.environment == 'staging' || github.ref == 'refs/heads/main')
+    environment:
+      name: staging
+      url: https://staging.neural-crypto.yourdomain.com
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Configure kubectl
+      run: |
+        aws eks update-kubeconfig --region us-west-2 --name neural-crypto-staging
+
+    - name: Deploy to Kubernetes
+      run: |
+        # Update image tag in deployment
+        sed -i "s|terragonlabs/neural-cryptanalysis:latest|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.pre-deployment.outputs.version }}|g" deployment/kubernetes/api-deployment.yaml
+        
+        # Apply configurations
+        kubectl apply -f deployment/kubernetes/namespace.yaml
+        kubectl apply -f deployment/kubernetes/configmap.yaml
+        kubectl apply -f deployment/kubernetes/secrets.yaml
+        kubectl apply -f deployment/kubernetes/postgresql.yaml
+        kubectl apply -f deployment/kubernetes/redis.yaml
+        kubectl apply -f deployment/kubernetes/api-deployment.yaml
+        kubectl apply -f deployment/kubernetes/hpa.yaml
+        kubectl apply -f deployment/kubernetes/ingress.yaml
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/neural-crypto-api -n neural-cryptanalysis --timeout=300s
+
+    - name: Run smoke tests
+      run: |
+        # Wait for service to be available
+        kubectl wait --for=condition=available --timeout=300s deployment/neural-crypto-api -n neural-cryptanalysis
+        
+        # Get service URL
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Run smoke tests
+        curl -f "https://${SERVICE_URL}/health" || exit 1
+        curl -f "https://${SERVICE_URL}/api/v1/status" || exit 1
+
+    - name: Run integration tests
+      run: |
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Run integration tests against staging
+        pytest tests/integration/ --base-url="https://${SERVICE_URL}" --env=staging
+
+    - name: Performance tests
+      run: |
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Run performance tests
+        python scripts/performance_test.py --url="https://${SERVICE_URL}" --duration=300
+
+    - name: Security scan (deployed)
+      run: |
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Run OWASP ZAP baseline scan
+        docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py \
+          -t "https://${SERVICE_URL}" -J zap-report.json || true
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: staging-deployment-artifacts
+        path: |
+          zap-report.json
+          performance-report.json
+
+  # Deploy to production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, deploy-staging]
+    if: needs.pre-deployment.outputs.environment == 'production' && (github.ref == 'refs/tags/v*' || github.event.inputs.environment == 'production')
+    environment:
+      name: production
+      url: https://neural-crypto.yourdomain.com
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Manual approval gate
+      if: github.event_name != 'workflow_dispatch' || github.event.inputs.force_deploy != 'true'
+      uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ secrets.GITHUB_TOKEN }}
+        approvers: admin,security-team
+        minimum-approvals: 2
+        issue-title: "Deploy ${{ needs.pre-deployment.outputs.version }} to Production"
+        issue-body: |
+          Please review and approve the production deployment:
+          - Version: ${{ needs.pre-deployment.outputs.version }}
+          - Staging tests: Passed
+          - Security scan: Completed
+          
+          Deployment will proceed to production environment.
+
+    - name: Configure AWS credentials (Production)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+        aws-region: us-west-2
+
+    - name: Configure kubectl (Production)
+      run: |
+        aws eks update-kubeconfig --region us-west-2 --name neural-crypto-production
+
+    - name: Blue-Green deployment preparation
+      run: |
+        # Check current deployment
+        CURRENT_VERSION=$(kubectl get deployment neural-crypto-api -n neural-cryptanalysis -o jsonpath='{.metadata.labels.version}' || echo "none")
+        
+        # Determine blue/green
+        if [[ "$CURRENT_VERSION" == "blue" ]]; then
+          echo "DEPLOY_COLOR=green" >> $GITHUB_ENV
+          echo "CURRENT_COLOR=blue" >> $GITHUB_ENV
+        else
+          echo "DEPLOY_COLOR=blue" >> $GITHUB_ENV
+          echo "CURRENT_COLOR=green" >> $GITHUB_ENV
+        fi
+
+    - name: Deploy new version (Blue-Green)
+      run: |
+        # Update deployment with new color and version
+        sed -i "s|terragonlabs/neural-cryptanalysis:latest|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.pre-deployment.outputs.version }}|g" deployment/kubernetes/api-deployment.yaml
+        sed -i "s|name: neural-crypto-api|name: neural-crypto-api-${{ env.DEPLOY_COLOR }}|g" deployment/kubernetes/api-deployment.yaml
+        sed -i "s|app.kubernetes.io/component: api|app.kubernetes.io/component: api-${{ env.DEPLOY_COLOR }}|g" deployment/kubernetes/api-deployment.yaml
+        
+        # Add version label
+        kubectl label deployment neural-crypto-api-${{ env.DEPLOY_COLOR }} version=${{ env.DEPLOY_COLOR }} -n neural-cryptanalysis || true
+        
+        # Apply new deployment
+        kubectl apply -f deployment/kubernetes/api-deployment.yaml
+        
+        # Wait for new deployment to be ready
+        kubectl rollout status deployment/neural-crypto-api-${{ env.DEPLOY_COLOR }} -n neural-cryptanalysis --timeout=600s
+
+    - name: Health check (new version)
+      run: |
+        # Get pod IP for health check
+        POD_IP=$(kubectl get pods -l app.kubernetes.io/component=api-${{ env.DEPLOY_COLOR }} -n neural-cryptanalysis -o jsonpath='{.items[0].status.podIP}')
+        
+        # Health check
+        kubectl run health-check-${{ github.run_id }} --rm -i --restart=Never --image=curlimages/curl -- \
+          curl -f "http://${POD_IP}:8000/health"
+
+    - name: Switch traffic (Blue-Green)
+      run: |
+        # Update service to point to new deployment
+        kubectl patch service neural-crypto-api -n neural-cryptanalysis -p '{"spec":{"selector":{"app.kubernetes.io/component":"api-${{ env.DEPLOY_COLOR }}"}}}'
+        
+        # Verify traffic switch
+        sleep 30
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        curl -f "https://${SERVICE_URL}/health"
+
+    - name: Production smoke tests
+      run: |
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Comprehensive smoke tests
+        curl -f "https://${SERVICE_URL}/health"
+        curl -f "https://${SERVICE_URL}/api/v1/status"
+        curl -f "https://${SERVICE_URL}/api/v1/version"
+
+    - name: Cleanup old deployment
+      if: env.CURRENT_COLOR != 'none'
+      run: |
+        # Wait before cleanup
+        sleep 300
+        
+        # Delete old deployment
+        kubectl delete deployment neural-crypto-api-${{ env.CURRENT_COLOR }} -n neural-cryptanalysis || true
+
+    - name: Update deployment status
+      run: |
+        # Create deployment record
+        kubectl create configmap deployment-${{ github.run_id }} \
+          --from-literal=version="${{ needs.pre-deployment.outputs.version }}" \
+          --from-literal=timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+          --from-literal=commit="${{ github.sha }}" \
+          --from-literal=color="${{ env.DEPLOY_COLOR }}" \
+          -n neural-cryptanalysis
+
+  # Post-deployment monitoring
+  post-deployment:
+    name: Post-deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always() && needs.deploy-production.result == 'success'
+    steps:
+    - name: Monitor deployment health
+      run: |
+        # Monitor for 10 minutes
+        for i in {1..20}; do
+          kubectl get pods -n neural-cryptanalysis
+          kubectl top pods -n neural-cryptanalysis || true
+          
+          # Check for any crashlooping pods
+          CRASH_PODS=$(kubectl get pods -n neural-cryptanalysis --field-selector=status.phase!=Running --no-headers | wc -l)
+          if [[ $CRASH_PODS -gt 0 ]]; then
+            echo "Found $CRASH_PODS unhealthy pods"
+            kubectl get pods -n neural-cryptanalysis --field-selector=status.phase!=Running
+            exit 1
+          fi
+          
+          sleep 30
+        done
+
+    - name: Performance monitoring
+      run: |
+        # Set up performance monitoring alerts
+        kubectl apply -f deployment/monitoring/performance-alerts.yaml || true
+
+    - name: Send deployment notification
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        username: 'GitHub Actions'
+        icon_emoji: ':rocket:'
+        text: |
+          Production deployment ${{ job.status }}!
+          Version: ${{ needs.pre-deployment.outputs.version }}
+          Environment: production
+          Commit: ${{ github.sha }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Rollback capability
+  rollback:
+    name: Rollback
+    runs-on: ubuntu-latest
+    if: failure() && (needs.deploy-staging.result == 'failure' || needs.deploy-production.result == 'failure')
+    needs: [pre-deployment, deploy-staging, deploy-production]
+    environment:
+      name: rollback
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure kubectl
+      run: |
+        if [[ "${{ needs.deploy-production.result }}" == "failure" ]]; then
+          aws eks update-kubeconfig --region us-west-2 --name neural-crypto-production
+          NAMESPACE="production"
+        else
+          aws eks update-kubeconfig --region us-west-2 --name neural-crypto-staging  
+          NAMESPACE="staging"
+        fi
+        echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
+
+    - name: Perform rollback
+      run: |
+        # Get previous successful deployment
+        PREVIOUS_DEPLOYMENT=$(kubectl get configmaps -n neural-cryptanalysis -l type=deployment --sort-by=.metadata.creationTimestamp -o name | tail -2 | head -1)
+        
+        if [[ -n "$PREVIOUS_DEPLOYMENT" ]]; then
+          PREVIOUS_VERSION=$(kubectl get $PREVIOUS_DEPLOYMENT -n neural-cryptanalysis -o jsonpath='{.data.version}')
+          
+          # Rollback to previous version
+          kubectl rollout undo deployment/neural-crypto-api -n neural-cryptanalysis
+          kubectl rollout status deployment/neural-crypto-api -n neural-cryptanalysis --timeout=300s
+          
+          echo "Rolled back to version: $PREVIOUS_VERSION"
+        else
+          echo "No previous deployment found for rollback"
+          exit 1
+        fi
+
+    - name: Verify rollback
+      run: |
+        SERVICE_URL=$(kubectl get ingress neural-crypto-ingress -n neural-cryptanalysis -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        curl -f "https://${SERVICE_URL}/health"
