@@ -1,0 +1,162 @@
+# Neural Operator Cryptanalysis Lab - Production Container
+# Multi-stage build for optimized production deployment
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim as base
+
+# Metadata
+LABEL maintainer="Terragon Labs <research@terragonlabs.com>" \
+      version="1.0.0" \
+      description="Neural Operator Cryptanalysis Framework" \
+      org.opencontainers.image.source="https://github.com/terragonlabs/neural-cryptanalysis" \
+      org.opencontainers.image.documentation="https://neural-cryptanalysis.terragonlabs.com" \
+      org.opencontainers.image.licenses="GPL-3.0"
+
+# Security hardening and environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    PYTHONPATH=/app/src \
+    NEURAL_CRYPTO_LOG_LEVEL=INFO \
+    NEURAL_CRYPTO_SECURITY_MODE=production \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
+
+# Create non-root user for security with specific UID/GID for consistency
+RUN groupadd -r -g 1001 cryptanalysis && \
+    useradd -r -u 1001 -g cryptanalysis -m -d /home/cryptanalysis -s /bin/bash cryptanalysis
+
+# Install system dependencies with security updates
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set working directory with proper permissions
+WORKDIR /app
+RUN chown -R cryptanalysis:cryptanalysis /app
+
+# Copy requirements first for better caching
+COPY --chown=cryptanalysis:cryptanalysis setup.py pyproject.toml ./
+COPY --chown=cryptanalysis:cryptanalysis src/neural_cryptanalysis/_version.py src/neural_cryptanalysis/ 2>/dev/null || true
+
+# Switch to non-root user for dependency installation
+USER cryptanalysis
+
+# Install Python dependencies with security considerations
+RUN pip install --no-cache-dir --user --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir --user -e .
+
+# Development stage
+FROM base as development
+
+# Switch back to root for development dependencies
+USER root
+
+# Install development dependencies
+RUN pip install --no-cache-dir -e ".[dev,research]"
+
+# Copy source code
+COPY --chown=cryptanalysis:cryptanalysis . .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data /app/results /app/cache && \
+    chown -R cryptanalysis:cryptanalysis /app
+
+USER cryptanalysis
+
+# Command for development
+CMD ["python", "-m", "neural_cryptanalysis.cli", "--help"]
+
+# Production stage with enhanced security
+FROM base as production
+
+# Copy only necessary files for production
+COPY --chown=cryptanalysis:cryptanalysis src/ src/
+COPY --chown=cryptanalysis:cryptanalysis README.md LICENSE ./
+COPY --chown=cryptanalysis:cryptanalysis deployment/config/production.yaml config/
+
+# Create production directories
+RUN mkdir -p /app/logs /app/data /app/results /app/cache && \
+    chown -R cryptanalysis:cryptanalysis /app
+
+# Install production dependencies only
+USER root
+RUN pip install --no-cache-dir .
+
+# Security hardening
+RUN chmod -R 755 /app && \
+    chmod 750 /app/src && \
+    find /app -type f -name "*.py" -exec chmod 644 {} \;
+
+USER cryptanalysis
+
+# Health check with comprehensive validation
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import neural_cryptanalysis; print('Health check passed')" || exit 1
+
+# Security context and final setup
+EXPOSE 8000
+
+# Command for production with proper signal handling
+CMD ["python", "-m", "neural_cryptanalysis.cli", "--production"]
+
+# Research stage with Jupyter support and enhanced security
+FROM development as research
+
+USER root
+
+# Install Jupyter and additional research tools
+RUN pip install --no-cache-dir \
+    jupyter \
+    jupyterlab \
+    plotly \
+    tensorboard \
+    wandb \
+    ipywidgets \
+    bokeh
+
+# Configure Jupyter security
+RUN jupyter lab --generate-config && \
+    echo "c.ServerApp.token = ''" >> /home/cryptanalysis/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.password = ''" >> /home/cryptanalysis/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.allow_origin = '*'" >> /home/cryptanalysis/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.allow_remote_access = True" >> /home/cryptanalysis/.jupyter/jupyter_lab_config.py
+
+# Expose ports for Jupyter and TensorBoard
+EXPOSE 8888 6006
+
+# Create directories for data and notebooks
+RUN mkdir -p /app/notebooks /app/data /app/results /app/tensorboard && \
+    chown -R cryptanalysis:cryptanalysis /app
+
+USER cryptanalysis
+
+# Command for research environment
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser"]
+
+# Benchmarking stage for performance testing
+FROM development as benchmark
+
+USER root
+
+# Install benchmarking tools
+RUN pip install --no-cache-dir \
+    pytest-benchmark \
+    memory-profiler \
+    line-profiler \
+    py-spy \
+    locust
+
+USER cryptanalysis
+
+# Command for benchmarking
+CMD ["python", "-m", "pytest", "benchmarks/", "-v", "--benchmark-only"]

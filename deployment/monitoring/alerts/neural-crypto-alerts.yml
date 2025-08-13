@@ -1,0 +1,260 @@
+groups:
+  - name: neural-cryptanalysis.alerts
+    rules:
+    # Application Health Alerts
+    - alert: NeuralCryptoAPIDown
+      expr: up{job="neural-crypto-api"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: neural-crypto-api
+      annotations:
+        summary: "Neural Cryptanalysis API is down"
+        description: "Neural Cryptanalysis API has been down for more than 1 minute."
+        runbook_url: "https://docs.neural-crypto.yourdomain.com/runbooks/api-down"
+
+    - alert: NeuralCryptoHighErrorRate
+      expr: rate(neural_crypto_requests_total{status=~"5.."}[5m]) / rate(neural_crypto_requests_total[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+      annotations:
+        summary: "High error rate in Neural Cryptanalysis API"
+        description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes."
+
+    - alert: NeuralCryptoHighLatency
+      expr: histogram_quantile(0.95, rate(neural_crypto_request_duration_seconds_bucket[5m])) > 2
+      for: 5m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+      annotations:
+        summary: "High latency in Neural Cryptanalysis API"
+        description: "95th percentile latency is {{ $value }}s for the last 5 minutes."
+
+    # Resource Utilization Alerts
+    - alert: NeuralCryptoHighCPUUsage
+      expr: rate(container_cpu_usage_seconds_total{container="neural-crypto-api"}[5m]) * 100 > 80
+      for: 10m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+      annotations:
+        summary: "High CPU usage in Neural Cryptanalysis API"
+        description: "CPU usage is {{ $value }}% for the last 10 minutes."
+
+    - alert: NeuralCryptoHighMemoryUsage
+      expr: (container_memory_usage_bytes{container="neural-crypto-api"} / container_spec_memory_limit_bytes{container="neural-crypto-api"}) * 100 > 85
+      for: 10m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+      annotations:
+        summary: "High memory usage in Neural Cryptanalysis API"
+        description: "Memory usage is {{ $value }}% for the last 10 minutes."
+
+    - alert: NeuralCryptoOutOfMemory
+      expr: (container_memory_usage_bytes{container="neural-crypto-api"} / container_spec_memory_limit_bytes{container="neural-crypto-api"}) * 100 > 95
+      for: 2m
+      labels:
+        severity: critical
+        service: neural-crypto-api
+      annotations:
+        summary: "Neural Cryptanalysis API near out of memory"
+        description: "Memory usage is {{ $value }}% and approaching limits."
+
+    # Database Alerts
+    - alert: PostgreSQLDown
+      expr: up{job="postgresql"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: postgresql
+      annotations:
+        summary: "PostgreSQL is down"
+        description: "PostgreSQL database has been down for more than 1 minute."
+
+    - alert: PostgreSQLHighConnections
+      expr: pg_stat_database_numbackends / pg_settings_max_connections * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        service: postgresql
+      annotations:
+        summary: "PostgreSQL connection usage is high"
+        description: "Connection usage is {{ $value }}% of maximum connections."
+
+    - alert: PostgreSQLSlowQueries
+      expr: rate(pg_stat_statements_mean_time[5m]) > 1000
+      for: 5m
+      labels:
+        severity: warning
+        service: postgresql
+      annotations:
+        summary: "PostgreSQL has slow queries"
+        description: "Average query time is {{ $value }}ms for the last 5 minutes."
+
+    # Redis Alerts
+    - alert: RedisDown
+      expr: up{job="redis"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: redis
+      annotations:
+        summary: "Redis is down"
+        description: "Redis cache has been down for more than 1 minute."
+
+    - alert: RedisHighMemoryUsage
+      expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+      for: 5m
+      labels:
+        severity: warning
+        service: redis
+      annotations:
+        summary: "Redis memory usage is high"
+        description: "Redis memory usage is {{ $value }}% for the last 5 minutes."
+
+    - alert: RedisConnectionsHigh
+      expr: redis_connected_clients > 1000
+      for: 5m
+      labels:
+        severity: warning
+        service: redis
+      annotations:
+        summary: "Redis has too many connections"
+        description: "Redis has {{ $value }} connected clients."
+
+    # Security Alerts
+    - alert: UnauthorizedAccessAttempts
+      expr: rate(neural_crypto_requests_total{status="401"}[5m]) > 10
+      for: 2m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+        category: security
+      annotations:
+        summary: "High number of unauthorized access attempts"
+        description: "{{ $value }} unauthorized access attempts per second for the last 2 minutes."
+
+    - alert: SecurityScanDetected
+      expr: rate(neural_crypto_requests_total{user_agent=~".*nikto.*|.*sqlmap.*|.*nmap.*"}[5m]) > 0
+      for: 1m
+      labels:
+        severity: critical
+        service: neural-crypto-api
+        category: security
+      annotations:
+        summary: "Security scanning tools detected"
+        description: "Security scanning activity detected from user agent patterns."
+
+    # Business Logic Alerts
+    - alert: ExperimentFailureRateHigh
+      expr: rate(neural_crypto_experiments_total{status="failed"}[10m]) / rate(neural_crypto_experiments_total[10m]) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+        category: business
+      annotations:
+        summary: "High experiment failure rate"
+        description: "Experiment failure rate is {{ $value | humanizePercentage }} for the last 10 minutes."
+
+    - alert: ModelTrainingStalled
+      expr: increase(neural_crypto_model_training_duration_seconds[30m]) == 0 and neural_crypto_active_training_jobs > 0
+      for: 30m
+      labels:
+        severity: warning
+        service: neural-crypto-api
+        category: business
+      annotations:
+        summary: "Model training appears to be stalled"
+        description: "No progress in model training for 30 minutes despite active jobs."
+
+    # Infrastructure Alerts
+    - alert: KubernetesNodeNotReady
+      expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+      for: 5m
+      labels:
+        severity: critical
+        service: kubernetes
+      annotations:
+        summary: "Kubernetes node is not ready"
+        description: "Node {{ $labels.node }} is not ready for more than 5 minutes."
+
+    - alert: KubernetesPodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+      for: 5m
+      labels:
+        severity: warning
+        service: kubernetes
+      annotations:
+        summary: "Pod is crash looping"
+        description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping."
+
+    - alert: DiskSpaceRunningLow
+      expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+      for: 5m
+      labels:
+        severity: warning
+        service: infrastructure
+      annotations:
+        summary: "Disk space is running low"
+        description: "Disk usage on {{ $labels.device }} is {{ $value }}%."
+
+    - alert: SSLCertificateExpiringSoon
+      expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+      for: 1m
+      labels:
+        severity: warning
+        service: ssl
+      annotations:
+        summary: "SSL certificate expiring soon"
+        description: "SSL certificate for {{ $labels.instance }} expires in less than 7 days."
+
+  - name: neural-cryptanalysis.compliance
+    rules:
+    # GDPR Compliance Alerts
+    - alert: DataRetentionViolation
+      expr: neural_crypto_data_age_days > 90
+      for: 1m
+      labels:
+        severity: critical
+        category: compliance
+        regulation: gdpr
+      annotations:
+        summary: "Data retention policy violation"
+        description: "Data older than 90 days detected, violating GDPR retention policies."
+
+    - alert: UnencryptedDataTransmission
+      expr: neural_crypto_requests_total{scheme="http"} > 0
+      for: 1m
+      labels:
+        severity: critical
+        category: compliance
+        regulation: gdpr
+      annotations:
+        summary: "Unencrypted data transmission detected"
+        description: "HTTP requests detected - all data must be transmitted over HTTPS."
+
+    # Audit Logging Alerts
+    - alert: AuditLogsMissing
+      expr: increase(neural_crypto_audit_logs_total[10m]) == 0 and rate(neural_crypto_requests_total[10m]) > 0
+      for: 10m
+      labels:
+        severity: critical
+        category: compliance
+      annotations:
+        summary: "Audit logs are missing"
+        description: "No audit logs generated despite active requests for 10 minutes."
+
+    - alert: PrivilegedOperationWithoutAudit
+      expr: neural_crypto_privileged_operations_total - neural_crypto_audit_privileged_operations_total > 0
+      for: 1m
+      labels:
+        severity: critical
+        category: compliance
+      annotations:
+        summary: "Privileged operation without audit log"
+        description: "Privileged operation performed without corresponding audit log entry."

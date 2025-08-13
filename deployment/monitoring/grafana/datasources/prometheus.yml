@@ -1,0 +1,86 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://neural-crypto-prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: "15s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+      manageAlerts: true
+      prometheusType: "Prometheus"
+      prometheusVersion: "2.40.0"
+      cacheLevel: "High"
+      incrementalQuerying: true
+      disableRecordingRules: false
+      customQueryParameters: ""
+      exemplarTraceIdDestinations:
+        - name: "Jaeger"
+          datasourceUid: "jaeger-uid"
+          url: "http://neural-crypto-jaeger:16686/trace/${__value.raw}"
+
+  - name: Jaeger
+    type: jaeger
+    uid: jaeger-uid
+    access: proxy
+    url: http://neural-crypto-jaeger:16686
+    editable: true
+    jsonData:
+      tracesToLogs:
+        datasourceUid: "loki-uid"
+        tags: ["job", "instance", "pod", "namespace"]
+        mappedTags:
+          - key: "service.name"
+            value: "service"
+        mapTagNamesEnabled: true
+        spanStartTimeShift: "-1h"
+        spanEndTimeShift: "1h"
+        filterByTraceID: true
+        filterBySpanID: false
+
+  - name: Loki
+    type: loki
+    uid: loki-uid
+    access: proxy
+    url: http://neural-crypto-loki:3100
+    editable: true
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - name: "TraceID"
+          matcherRegex: "trace_id=(\\w+)"
+          url: "http://neural-crypto-jaeger:16686/trace/${__value.raw}"
+          datasourceUid: "jaeger-uid"
+
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    url: neural-crypto-postgresql:5432
+    database: cryptanalysis
+    user: grafana_user
+    secureJsonData:
+      password: "${GRAFANA_DB_PASSWORD}"
+    jsonData:
+      sslmode: "disable"
+      maxOpenConns: 10
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: false
+
+  - name: Redis
+    type: redis-datasource
+    access: proxy
+    url: redis://neural-crypto-redis:6379
+    secureJsonData:
+      password: "${REDIS_PASSWORD}"
+    jsonData:
+      client: "standalone"
+      poolSize: 5
+      timeout: 10
+      pingInterval: 0
+      pipelineWindow: 0

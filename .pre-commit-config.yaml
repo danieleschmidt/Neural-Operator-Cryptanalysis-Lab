@@ -1,0 +1,170 @@
+# Pre-commit configuration for neural cryptanalysis framework
+# See https://pre-commit.com for more information
+
+repos:
+  # Code formatting and linting
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: [--line-length=88]
+        exclude: '(migrations|__pycache__|\.pyc|\.pyo|\.pyd|\.so|\.egg)'
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=88]
+        exclude: '(migrations|__pycache__|\.pyc|\.pyo|\.pyd|\.so|\.egg)'
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203,W503,E501]
+        additional_dependencies: [flake8-docstrings, flake8-import-order]
+        exclude: '(migrations|__pycache__|\.pyc|\.pyo|\.pyd|\.so|\.egg)'
+
+  # Security scanning
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [-r, src/, -f, json, -o, bandit-report.json]
+        exclude: '(test_|tests/)'
+
+  # Type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports, --warn-unreachable, --strict]
+        additional_dependencies: [types-requests, types-PyYAML]
+        exclude: '(test_|tests/|migrations/)'
+
+  # Documentation
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: [--convention=google]
+        exclude: '(test_|tests/|migrations/|setup\.py)'
+
+  # General code quality
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '(\.md|\.txt|\.patch)$'
+      - id: end-of-file-fixer
+        exclude: '(\.md|\.txt|\.patch)$'
+      - id: check-yaml
+        exclude: '(\.github/)'
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key
+        exclude: '(test_|tests/|examples/)'
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # Python-specific hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: name-tests-test
+        args: [--pytest-test-first]
+
+  # Dependency vulnerability scanning
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.2
+    hooks:
+      - id: python-safety-dependencies-check
+        args: [--full-report]
+
+  # License header checking
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.1
+    hooks:
+      - id: insert-license
+        files: \.py$
+        exclude: '(test_|tests/|setup\.py|__init__\.py)'
+        args:
+          - --license-filepath
+          - LICENSE_HEADER.txt
+          - --comment-style
+          - '#'
+
+  # Custom hooks for neural cryptanalysis
+  - repo: local
+    hooks:
+      # Basic import validation
+      - id: validate-imports
+        name: Validate Neural Cryptanalysis Imports
+        entry: python scripts/validate_imports.py
+        language: python
+        files: '^src/.*\.py$'
+        pass_filenames: true
+
+      # Security validation
+      - id: security-check
+        name: Neural Cryptanalysis Security Check
+        entry: python scripts/security_check.py
+        language: python
+        files: '^src/.*\.py$'
+        pass_filenames: true
+
+      # Performance regression check
+      - id: performance-check
+        name: Performance Regression Check
+        entry: python scripts/performance_check.py
+        language: python
+        files: '^(src/|tests/).*\.py$'
+        pass_filenames: false
+
+      # Documentation completeness
+      - id: docs-check
+        name: Documentation Completeness Check
+        entry: python scripts/docs_check.py
+        language: python
+        files: '^src/.*\.py$'
+        pass_filenames: true
+
+      # Test coverage validation
+      - id: coverage-check
+        name: Test Coverage Validation
+        entry: python scripts/coverage_check.py
+        language: python
+        files: '^(src/|tests/).*\.py$'
+        pass_filenames: false
+
+# Configuration for hooks
+default_language_version:
+  python: python3
+
+exclude: |
+  (?x)^(
+      \.git/.*|
+      \.venv/.*|
+      venv/.*|
+      __pycache__/.*|
+      \.pytest_cache/.*|
+      \.mypy_cache/.*|
+      build/.*|
+      dist/.*|
+      \.eggs/.*|
+      .*\.egg-info/.*|
+      htmlcov/.*|
+      \.coverage.*|
+      \.tox/.*
+  )$

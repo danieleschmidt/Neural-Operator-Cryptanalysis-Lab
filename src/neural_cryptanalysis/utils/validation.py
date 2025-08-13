@@ -513,3 +513,322 @@ class ValidationContext:
         """Add warning if condition is True."""
         if condition:
             self.add_warning(message)
+
+
+@dataclass 
+class ValidationResult:
+    """Comprehensive validation result."""
+    is_valid: bool
+    errors: List[str]
+    warnings: List[str]
+    validation_type: str = "general"
+    
+    def __str__(self) -> str:
+        result = f"Validation Result ({self.validation_type}): {'PASS' if self.is_valid else 'FAIL'}\n"
+        
+        if self.errors:
+            result += f"Errors ({len(self.errors)}):\n"
+            for error in self.errors:
+                result += f"  - {error}\n"
+        
+        if self.warnings:
+            result += f"Warnings ({len(self.warnings)}):\n"
+            for warning in self.warnings:
+                result += f"  - {warning}\n"
+        
+        return result
+
+
+class DataValidator:
+    """Advanced data validation with comprehensive checks."""
+    
+    def __init__(self):
+        self.validation_cache = {}
+        self.schema_registry = {}
+    
+    def register_schema(self, name: str, schema: Dict[str, Any]):
+        """Register a validation schema."""
+        self.schema_registry[name] = schema
+    
+    def validate_against_schema(self, data: Any, schema_name: str) -> List[str]:
+        """Validate data against registered schema."""
+        if schema_name not in self.schema_registry:
+            return [f"Unknown schema: {schema_name}"]
+        
+        schema = self.schema_registry[schema_name]
+        return self._validate_recursive(data, schema, path="root")
+    
+    def _validate_recursive(self, data: Any, schema: Dict[str, Any], path: str) -> List[str]:
+        """Recursively validate data against schema."""
+        issues = []
+        
+        # Type validation
+        expected_type = schema.get('type')
+        if expected_type:
+            if expected_type == 'array' and not isinstance(data, (list, tuple, np.ndarray)):
+                issues.append(f"{path}: Expected array, got {type(data)}")
+            elif expected_type == 'object' and not isinstance(data, dict):
+                issues.append(f"{path}: Expected object, got {type(data)}")
+            elif expected_type == 'string' and not isinstance(data, str):
+                issues.append(f"{path}: Expected string, got {type(data)}")
+            elif expected_type == 'number' and not isinstance(data, (int, float)):
+                issues.append(f"{path}: Expected number, got {type(data)}")
+        
+        # Range validation for numbers
+        if isinstance(data, (int, float)):
+            min_val = schema.get('minimum')
+            max_val = schema.get('maximum')
+            if min_val is not None and data < min_val:
+                issues.append(f"{path}: Value {data} below minimum {min_val}")
+            if max_val is not None and data > max_val:
+                issues.append(f"{path}: Value {data} above maximum {max_val}")
+        
+        # Length validation for arrays/strings
+        if isinstance(data, (str, list, tuple, np.ndarray)):
+            min_length = schema.get('minLength')
+            max_length = schema.get('maxLength')
+            length = len(data)
+            if min_length is not None and length < min_length:
+                issues.append(f"{path}: Length {length} below minimum {min_length}")
+            if max_length is not None and length > max_length:
+                issues.append(f"{path}: Length {length} above maximum {max_length}")
+        
+        # Pattern validation for strings
+        if isinstance(data, str) and 'pattern' in schema:
+            pattern = schema['pattern']
+            if not re.match(pattern, data):
+                issues.append(f"{path}: String does not match pattern {pattern}")
+        
+        # Properties validation for objects
+        if isinstance(data, dict) and 'properties' in schema:
+            properties = schema['properties']
+            required = schema.get('required', [])
+            
+            # Check required properties
+            for req_prop in required:
+                if req_prop not in data:
+                    issues.append(f"{path}: Missing required property {req_prop}")
+            
+            # Validate each property
+            for prop_name, prop_value in data.items():
+                if prop_name in properties:
+                    prop_issues = self._validate_recursive(
+                        prop_value, properties[prop_name], f"{path}.{prop_name}"
+                    )
+                    issues.extend(prop_issues)
+        
+        # Items validation for arrays
+        if isinstance(data, (list, tuple, np.ndarray)) and 'items' in schema:
+            items_schema = schema['items']
+            for i, item in enumerate(data):
+                item_issues = self._validate_recursive(
+                    item, items_schema, f"{path}[{i}]"
+                )
+                issues.extend(item_issues)
+        
+        return issues
+
+
+class ConfigurationValidator:
+    """Specialized validator for configuration objects."""
+    
+    def __init__(self):
+        self.config_schemas = {
+            'neural_operator': {
+                'type': 'object',
+                'required': ['input_dim', 'output_dim', 'hidden_dim'],
+                'properties': {
+                    'input_dim': {'type': 'number', 'minimum': 1, 'maximum': 10000},
+                    'output_dim': {'type': 'number', 'minimum': 1, 'maximum': 1000},
+                    'hidden_dim': {'type': 'number', 'minimum': 1, 'maximum': 5000},
+                    'num_layers': {'type': 'number', 'minimum': 1, 'maximum': 50},
+                    'activation': {
+                        'type': 'string',
+                        'pattern': '^(relu|gelu|elu|leaky_relu|silu|tanh|sigmoid)$'
+                    },
+                    'dropout': {'type': 'number', 'minimum': 0, 'maximum': 0.99},
+                    'device': {
+                        'type': 'string', 
+                        'pattern': '^(cpu|cuda|auto)$'
+                    }
+                }
+            },
+            'training': {
+                'type': 'object',
+                'required': ['batch_size', 'learning_rate', 'epochs'],
+                'properties': {
+                    'batch_size': {'type': 'number', 'minimum': 1, 'maximum': 10000},
+                    'learning_rate': {'type': 'number', 'minimum': 1e-8, 'maximum': 1.0},
+                    'epochs': {'type': 'number', 'minimum': 1, 'maximum': 10000},
+                    'patience': {'type': 'number', 'minimum': 1, 'maximum': 1000},
+                    'min_delta': {'type': 'number', 'minimum': 0, 'maximum': 1.0}
+                }
+            },
+            'side_channel': {
+                'type': 'object',
+                'properties': {
+                    'sample_rate': {'type': 'number', 'minimum': 1, 'maximum': 1e12},
+                    'trace_length': {'type': 'number', 'minimum': 100, 'maximum': 10000000},
+                    'n_traces': {'type': 'number', 'minimum': 10, 'maximum': 100000000},
+                    'channel_type': {
+                        'type': 'string',
+                        'pattern': '^(power|electromagnetic|acoustic|timing|cache)$'
+                    }
+                }
+            }
+        }
+        
+        self.validator = DataValidator()
+        for name, schema in self.config_schemas.items():
+            self.validator.register_schema(name, schema)
+    
+    def validate_config_section(self, config: Dict[str, Any], section: str) -> List[str]:
+        """Validate a specific configuration section."""
+        if section not in self.config_schemas:
+            return [f"Unknown configuration section: {section}"]
+        
+        return self.validator.validate_against_schema(config, section)
+    
+    def validate_complete_config(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+        """Validate complete configuration object."""
+        results = {}
+        
+        for section in ['neural_operator', 'training', 'side_channel']:
+            if section in config:
+                issues = self.validate_config_section(config[section], section)
+                if issues:
+                    results[section] = issues
+        
+        return results
+
+
+class SecurityValidator:
+    """Security-focused validation utilities."""
+    
+    def __init__(self):
+        self.dangerous_patterns = [
+            r'(eval|exec|__import__|getattr|setattr|delattr)',
+            r'(\.\./|\.\.\\)',  # Path traversal
+            r'(<script|javascript:|data:|vbscript:)',  # XSS patterns
+            r'(\b(DROP|DELETE|INSERT|UPDATE|SELECT)\b)',  # SQL injection
+        ]
+        
+        self.max_recursion_depth = 10
+        self.max_string_length = 10000
+        self.max_collection_size = 10000
+    
+    def validate_safe_input(self, data: Any, field_name: str = "input") -> List[str]:
+        """Validate input for security issues."""
+        issues = []
+        
+        try:
+            issues.extend(self._check_recursion_depth(data, 0))
+            issues.extend(self._check_dangerous_patterns(data, field_name))
+            issues.extend(self._check_size_limits(data, field_name))
+        except Exception as e:
+            issues.append(f"Security validation failed: {e}")
+        
+        return issues
+    
+    def _check_recursion_depth(self, data: Any, depth: int) -> List[str]:
+        """Check for excessive recursion depth."""
+        if depth > self.max_recursion_depth:
+            return [f"Maximum recursion depth exceeded: {depth} > {self.max_recursion_depth}"]
+        
+        issues = []
+        
+        if isinstance(data, dict):
+            for value in data.values():
+                issues.extend(self._check_recursion_depth(value, depth + 1))
+        elif isinstance(data, (list, tuple)):
+            for item in data:
+                issues.extend(self._check_recursion_depth(item, depth + 1))
+        
+        return issues
+    
+    def _check_dangerous_patterns(self, data: Any, field_name: str) -> List[str]:
+        """Check for dangerous patterns in strings.""" 
+        issues = []
+        
+        if isinstance(data, str):
+            for pattern in self.dangerous_patterns:
+                if re.search(pattern, data, re.IGNORECASE):
+                    issues.append(f"Potentially dangerous pattern found in {field_name}: {pattern}")
+        elif isinstance(data, dict):
+            for key, value in data.items():
+                issues.extend(self._check_dangerous_patterns(value, f"{field_name}.{key}"))
+        elif isinstance(data, (list, tuple)):
+            for i, item in enumerate(data):
+                issues.extend(self._check_dangerous_patterns(item, f"{field_name}[{i}]"))
+        
+        return issues
+    
+    def _check_size_limits(self, data: Any, field_name: str) -> List[str]:
+        """Check for size limit violations."""
+        issues = []
+        
+        if isinstance(data, str):
+            if len(data) > self.max_string_length:
+                issues.append(f"String too long in {field_name}: {len(data)} > {self.max_string_length}")
+        elif isinstance(data, (list, tuple, dict)):
+            if len(data) > self.max_collection_size:
+                issues.append(f"Collection too large in {field_name}: {len(data)} > {self.max_collection_size}")
+        
+        return issues
+
+
+# Global validator instances
+data_validator = DataValidator()
+config_validator = ConfigurationValidator()
+security_validator = SecurityValidator()
+
+
+def comprehensive_validation(data: Any, 
+                           validation_type: str = 'general',
+                           security_check: bool = True,
+                           performance_check: bool = False) -> ValidationResult:
+    """Perform comprehensive validation on data.
+    
+    Args:
+        data: Data to validate
+        validation_type: Type of validation (general, config, traces)
+        security_check: Whether to perform security validation
+        performance_check: Whether to perform performance validation
+        
+    Returns:
+        Comprehensive validation results
+    """
+    all_issues = []
+    warnings = []
+    
+    # Type-specific validation
+    if validation_type == 'config' and isinstance(data, dict):
+        config_issues = config_validator.validate_complete_config(data)
+        for section, issues in config_issues.items():
+            all_issues.extend([f"{section}: {issue}" for issue in issues])
+    
+    elif validation_type == 'traces':
+        if isinstance(data, dict) and 'traces' in data:
+            trace_issues = validate_trace_data(
+                data['traces'],
+                data.get('labels'),
+                data.get('plaintexts'),
+                data.get('keys')
+            )
+            all_issues.extend(trace_issues)
+    
+    # Security validation
+    if security_check:
+        security_issues = security_validator.validate_safe_input(data)
+        all_issues.extend(security_issues)
+    
+    # Separate warnings from errors
+    errors = [issue for issue in all_issues if not issue.startswith('WARNING:')]
+    warnings = [issue[9:] for issue in all_issues if issue.startswith('WARNING:')]
+    
+    return ValidationResult(
+        is_valid=len(errors) == 0,
+        errors=errors,
+        warnings=warnings,
+        validation_type=validation_type
+    )

@@ -1,0 +1,80 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: neural-crypto-api-vpa
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: autoscaling
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: neural-crypto-api
+  updatePolicy:
+    updateMode: "Auto"  # Auto, Initial, Off
+  resourcePolicy:
+    containerPolicies:
+    - containerName: neural-crypto-api
+      minAllowed:
+        cpu: 100m
+        memory: 256Mi
+      maxAllowed:
+        cpu: 4000m
+        memory: 8Gi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: neural-crypto-postgresql-vpa
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: autoscaling
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: neural-crypto-postgresql
+  updatePolicy:
+    updateMode: "Initial"  # Conservative approach for database
+  resourcePolicy:
+    containerPolicies:
+    - containerName: postgresql
+      minAllowed:
+        cpu: 250m
+        memory: 512Mi
+      maxAllowed:
+        cpu: 2000m
+        memory: 4Gi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: neural-crypto-redis-vpa
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: autoscaling
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: neural-crypto-redis
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: redis
+      minAllowed:
+        cpu: 100m
+        memory: 256Mi
+      maxAllowed:
+        cpu: 1000m
+        memory: 2Gi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits

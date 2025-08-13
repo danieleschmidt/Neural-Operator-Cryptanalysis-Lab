@@ -1,0 +1,243 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neural-crypto-postgresql-pvc
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: fast-ssd  # Adjust based on your storage class
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neural-crypto-postgresql
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+    app.kubernetes.io/version: "15"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: neural-cryptanalysis
+      app.kubernetes.io/component: postgresql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: neural-cryptanalysis
+        app.kubernetes.io/component: postgresql
+        app.kubernetes.io/version: "15"
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+      - name: postgresql
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        env:
+        - name: POSTGRES_DB
+          value: "cryptanalysis"
+        - name: POSTGRES_USER
+          value: "crypto_user"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: neural-crypto-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_INITDB_ARGS
+          value: "--auth-host=scram-sha-256"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+        - name: postgresql-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - crypto_user
+            - -d
+            - cryptanalysis
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - crypto_user
+            - -d
+            - cryptanalysis
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 999
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: postgresql-data
+        persistentVolumeClaim:
+          claimName: neural-crypto-postgresql-pvc
+      - name: postgresql-config
+        configMap:
+          name: neural-crypto-postgresql-config
+      - name: init-scripts
+        configMap:
+          name: neural-crypto-postgresql-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: neural-crypto-postgresql
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+  selector:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neural-crypto-postgresql-config
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+data:
+  postgresql.conf: |
+    # Connection settings
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 100
+    
+    # Memory settings
+    shared_buffers = 256MB
+    effective_cache_size = 1GB
+    work_mem = 4MB
+    maintenance_work_mem = 64MB
+    
+    # Write-ahead logging
+    wal_level = replica
+    max_wal_size = 1GB
+    min_wal_size = 80MB
+    checkpoint_completion_target = 0.9
+    
+    # Performance
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Logging
+    log_destination = 'stderr'
+    logging_collector = on
+    log_min_messages = warning
+    log_min_error_statement = error
+    log_min_duration_statement = 1000
+    
+    # Security
+    ssl = off
+    password_encryption = scram-sha-256
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neural-crypto-postgresql-init
+  namespace: neural-cryptanalysis
+  labels:
+    app.kubernetes.io/name: neural-cryptanalysis
+    app.kubernetes.io/component: postgresql
+data:
+  01-init.sql: |
+    -- Create additional databases
+    CREATE DATABASE grafana;
+    
+    -- Create users
+    CREATE USER grafana_user WITH PASSWORD 'change_me_in_production';
+    GRANT ALL PRIVILEGES ON DATABASE grafana TO grafana_user;
+    
+    -- Create extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    
+    -- Create application schema
+    \c cryptanalysis;
+    
+    CREATE TABLE IF NOT EXISTS experiments (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        configuration JSONB,
+        results JSONB,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS models (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name VARCHAR(255) NOT NULL,
+        type VARCHAR(100) NOT NULL,
+        parameters JSONB,
+        metrics JSONB,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS audit_logs (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id VARCHAR(255),
+        action VARCHAR(255) NOT NULL,
+        resource_type VARCHAR(100),
+        resource_id VARCHAR(255),
+        details JSONB,
+        ip_address INET,
+        user_agent TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    -- Create indexes
+    CREATE INDEX IF NOT EXISTS idx_experiments_status ON experiments(status);
+    CREATE INDEX IF NOT EXISTS idx_experiments_created_at ON experiments(created_at);
+    CREATE INDEX IF NOT EXISTS idx_models_type ON models(type);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at);

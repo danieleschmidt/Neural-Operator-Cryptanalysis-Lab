@@ -1,0 +1,10 @@
+# Neural Operator Cryptanalysis Framework
+# Copyright (c) 2024 Terragon Labs
+# Licensed under GPL-3.0 - see LICENSE file for details
+#
+# IMPORTANT: This software is intended for defensive security research only.
+# Use for offensive purposes or attacks against systems without explicit
+# permission is prohibited and may be illegal.
+#
+# For responsible disclosure of vulnerabilities found using this framework,
+# please contact: security@terragonlabs.com

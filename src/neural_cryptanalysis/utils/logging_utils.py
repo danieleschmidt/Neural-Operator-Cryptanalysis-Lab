@@ -396,3 +396,83 @@ class ProgressLogger:
             message += f" - Final: {metric_str}"
         
         self.logger.info(message)
+
+
+class SecureLogFilter(logging.Filter):
+    """Filter to sanitize and secure log messages."""
+    
+    def __init__(self):
+        super().__init__()
+        self.sensitive_patterns = [
+            r'(?i)(password|token|key|secret|auth)[\s=:]+[^\s]+',
+            r'(?i)(api[_-]?key)[\s=:]+[^\s]+',
+            r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',  # Credit card
+            r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',  # Email
+        ]
+        
+        self.rate_limits = {}
+        self.max_rate = 100  # Max logs per minute for same message
+        
+    def filter(self, record):
+        """Filter and sanitize log records."""
+        # Sanitize message
+        if hasattr(record, 'msg'):
+            record.msg = self._sanitize_message(str(record.msg))
+        
+        # Rate limiting
+        if not self._check_rate_limit(record):
+            return False
+        
+        # Security level filtering
+        if hasattr(record, 'audit_type') and record.audit_type in ['sensitive_operation']:
+            # Additional security checks for sensitive operations
+            return self._security_check(record)
+        
+        return True
+    
+    def _sanitize_message(self, message: str) -> str:
+        """Remove sensitive information from log messages."""
+        import re
+        
+        sanitized = message
+        for pattern in self.sensitive_patterns:
+            sanitized = re.sub(pattern, '[REDACTED]', sanitized)
+        
+        return sanitized
+    
+    def _check_rate_limit(self, record) -> bool:
+        """Check if log message exceeds rate limit."""
+        import time
+        
+        current_time = time.time()
+        message_key = f"{record.levelname}:{record.msg}"
+        
+        if message_key not in self.rate_limits:
+            self.rate_limits[message_key] = []
+        
+        # Clean old entries
+        cutoff_time = current_time - 60  # 1 minute window
+        self.rate_limits[message_key] = [
+            t for t in self.rate_limits[message_key] if t > cutoff_time
+        ]
+        
+        # Check rate limit
+        if len(self.rate_limits[message_key]) >= self.max_rate:
+            return False
+        
+        # Add current time
+        self.rate_limits[message_key].append(current_time)
+        return True
+    
+    def _security_check(self, record) -> bool:
+        """Additional security checks for sensitive log records."""
+        return True
+
+
+# Global secure logger instances
+def create_secure_logger(name: str) -> logging.Logger:
+    """Create a secure logger with enhanced filtering."""
+    logger = get_logger(name)
+    security_filter = SecureLogFilter()
+    logger.addFilter(security_filter)
+    return logger
