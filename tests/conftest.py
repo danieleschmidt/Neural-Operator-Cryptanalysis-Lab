@@ -2,13 +2,30 @@
 
 import pytest
 import numpy as np
-import torch
 import tempfile
 import shutil
 from pathlib import Path
 import sys
 import warnings
 from unittest.mock import Mock, patch
+
+# Mock torch if not available
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    # Create a mock torch module
+    torch = Mock()
+    torch.manual_seed = Mock()
+    torch.cuda = Mock()
+    torch.cuda.is_available = Mock(return_value=False)
+    torch.cuda.manual_seed = Mock()
+    torch.cuda.empty_cache = Mock()
+    torch.backends = Mock()
+    torch.backends.cudnn = Mock()
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -24,18 +41,27 @@ def setup_test_environment():
     """Set up the test environment for the entire test session."""
     # Set random seeds for reproducibility
     np.random.seed(42)
-    torch.manual_seed(42)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(42)
     
-    # Ensure deterministic behavior
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    if TORCH_AVAILABLE:
+        torch.manual_seed(42)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(42)
+        
+        # Ensure deterministic behavior
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    else:
+        # Mock torch operations
+        torch.manual_seed(42)
+        torch.cuda.manual_seed(42)
     
     yield
     
     # Cleanup after all tests
-    torch.cuda.empty_cache() if torch.cuda.is_available() else None
+    if TORCH_AVAILABLE and torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    elif not TORCH_AVAILABLE:
+        torch.cuda.empty_cache()
 
 
 @pytest.fixture
@@ -260,7 +286,7 @@ def pytest_configure(config):
 
 # Skip conditions
 skip_if_no_gpu = pytest.mark.skipif(
-    not torch.cuda.is_available(),
+    not TORCH_AVAILABLE or not torch.cuda.is_available(),
     reason="GPU not available"
 )
 

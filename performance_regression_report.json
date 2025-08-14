@@ -1,0 +1,26 @@
+{
+  "timestamp": 1755144953.8627925,
+  "current_results": {
+    "import_time": Infinity,
+    "basic_functionality": {
+      "data_generation": Infinity,
+      "model_creation": Infinity,
+      "forward_pass": Infinity
+    },
+    "training_performance": {
+      "training_time": Infinity,
+      "inference_time": Infinity
+    },
+    "memory_usage": {
+      "baseline_memory_mb": 0,
+      "import_memory_increase_mb": Infinity,
+      "creation_memory_increase_mb": Infinity
+    }
+  },
+  "baseline_exists": true,
+  "regressions_detected": 0,
+  "regressions": [],
+  "overall_status": "PASSED",
+  "high_severity_regressions": 0,
+  "medium_severity_regressions": 0
+}
