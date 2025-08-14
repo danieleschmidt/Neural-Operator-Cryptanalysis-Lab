@@ -1,9 +1,209 @@
 {
-  "total_issues": 9,
+  "total_issues": 57,
   "critical_issues": 0,
-  "high_issues": 0,
-  "medium_issues": 9,
+  "high_issues": 2,
+  "medium_issues": 55,
   "issues": [
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 32,
+      "message": "Unregistered external dependency: _version",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/__init__.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 50,
+      "message": "Unregistered external dependency: neural_operators",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/__init__.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 51,
+      "message": "Unregistered external dependency: side_channels",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/__init__.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 52,
+      "message": "Unregistered external dependency: utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/__init__.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 55,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/__init__.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 21,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 22,
+      "message": "Unregistered external dependency: utils.config",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 23,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 11,
+      "message": "Unregistered external dependency: abc",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 20,
+      "message": "Unregistered external dependency: sklearn.metrics",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 21,
+      "message": "Unregistered external dependency: sklearn.feature_selection",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 25,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 26,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 27,
+      "message": "Unregistered external dependency: utils.performance",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 3,
+      "message": "Unregistered external dependency: argparse",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "security",
+      "severity": "high",
+      "line": 4,
+      "message": "Security-sensitive import: sys",
+      "recommendation": "Use secure alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 9,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 10,
+      "message": "Unregistered external dependency: targets",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 11,
+      "message": "Unregistered external dependency: utils.config",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 12,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 13,
+      "message": "Unregistered external dependency: security",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 14,
+      "message": "Unregistered external dependency: optimization",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 218,
+      "message": "Unregistered external dependency: targets.base",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 333,
+      "message": "Unregistered external dependency: side_channels.base",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 367,
+      "message": "Unregistered external dependency: optimization",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
     {
       "type": "dependency",
       "severity": "medium",
@@ -75,6 +275,190 @@
       "message": "Unregistered external dependency: utils.logging_utils",
       "recommendation": "Add to allowed dependencies or remove if unnecessary",
       "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "security",
+      "severity": "high",
+      "line": 15,
+      "message": "Security-sensitive import: pickle",
+      "recommendation": "Use secure alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 15,
+      "message": "Unregistered external dependency: pickle",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 19,
+      "message": "Unregistered external dependency: abc",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 23,
+      "message": "Unregistered external dependency: queue",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 24,
+      "message": "Unregistered external dependency: socket",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 25,
+      "message": "Unregistered external dependency: struct",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 33,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 34,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 35,
+      "message": "Unregistered external dependency: utils.performance",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/distributed_computing.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 11,
+      "message": "Unregistered external dependency: queue",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 14,
+      "message": "Unregistered external dependency: abc",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 22,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 23,
+      "message": "Unregistered external dependency: multi_modal_fusion",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 24,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 25,
+      "message": "Unregistered external dependency: utils.performance",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 14,
+      "message": "Unregistered external dependency: torch_geometric.nn",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 15,
+      "message": "Unregistered external dependency: torch_geometric.data",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 16,
+      "message": "Unregistered external dependency: torch_geometric.utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 23,
+      "message": "Unregistered external dependency: core",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 24,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 15,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/optimization.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 9,
+      "message": "Unregistered external dependency: enum",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/security.py"
+    },
+    {
+      "type": "dependency",
+      "severity": "medium",
+      "line": 12,
+      "message": "Unregistered external dependency: utils.logging_utils",
+      "recommendation": "Add to allowed dependencies or remove if unnecessary",
+      "file": "src/neural_cryptanalysis/security.py"
     }
   ]
 }

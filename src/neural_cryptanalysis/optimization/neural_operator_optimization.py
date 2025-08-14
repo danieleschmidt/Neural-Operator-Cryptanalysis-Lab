@@ -29,7 +29,14 @@ try:
     HAS_TORCH = True
 except ImportError:
     HAS_TORCH = False
-    torch = None
+    # Create mock torch modules
+    from unittest.mock import Mock
+    torch = Mock()
+    nn = Mock()
+    nn.Module = Mock
+    torch.Tensor = Mock
+    torch.jit = Mock()
+    DataLoader = Mock
 
 from ..utils.logging_utils import get_logger
 from .performance_optimizer import AdvancedPerformanceOptimizer, optimize

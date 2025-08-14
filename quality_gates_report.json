@@ -1,153 +1,151 @@
 {
-  "timestamp": 1754719271.144519,
-  "overall_passed": "True",
-  "overall_score": 1.0,
-  "results": [
+  "timestamp": 1755144956.8584526,
+  "execution_time_seconds": 4.378912448883057,
+  "overall_status": "FAILED",
+  "overall_score": 30.0,
+  "statistics": {
+    "total_gates": 10,
+    "passed_gates": 3,
+    "failed_gates": 7,
+    "critical_gates": 7,
+    "critical_passed": 1,
+    "critical_failed": 6
+  },
+  "scores": {
+    "overall_score": 30.0,
+    "critical_score": 14.285714285714285
+  },
+  "gate_results": [
     {
-      "name": "Security & Responsible Use",
+      "name": "Import Validation",
       "passed": true,
-      "score": 1.0,
+      "score": 100.0,
+      "execution_time": 0.3816711902618408,
       "critical": true,
-      "execution_time": 0.0031091490000108024,
-      "details": {
-        "responsible_notice": true,
-        "defensive_focus": true,
-        "ethics_section": true,
-        "security_warnings": 1,
-        "has_license": true,
-        "score_breakdown": {
-          "responsible_notice": 25,
-          "defensive_focus": 25,
-          "ethics_section": 20,
-          "security_warnings": 20,
-          "license": 10
-        }
-      }
+      "error_message": ""
     },
     {
-      "name": "Malicious Code Scan",
-      "passed": true,
-      "score": 1.0,
+      "name": "Security Check",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.5643770694732666,
       "critical": true,
-      "execution_time": 0.012397691000160194,
-      "details": {
-        "scanned_files": 46,
-        "total_violations": 27,
-        "filtered_violations": 0,
-        "violations": []
-      }
+      "error_message": "/root/repo/scripts/security_check.py:123: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead\n  def visit_Str(self, node: ast.Str):\n"
     },
     {
-      "name": "Core Functionality",
+      "name": "Documentation Check",
       "passed": true,
-      "score": 1.0,
+      "score": 100.0,
+      "execution_time": 0.5090224742889404,
+      "critical": false,
+      "error_message": ""
+    },
+    {
+      "name": "Test Coverage",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 1.063551425933838,
       "critical": true,
-      "execution_time": 8.64362296000013,
-      "details": {
-        "basic_functionality": true,
-        "robustness_features": true,
-        "total_tests_passed": 2
-      }
+      "error_message": ""
     },
     {
-      "name": "Error Handling",
+      "name": "Performance Regression",
       "passed": true,
-      "score": 1.0,
+      "score": 100.0,
+      "execution_time": 1.4000234603881836,
       "critical": false,
-      "execution_time": 0.004859579999902053,
-      "details": {
-        "error_tests": [
-          {
-            "test": "empty_data",
-            "passed": true
-          },
-          {
-            "test": "mismatched_labels",
-            "passed": true
-          },
-          {
-            "test": "config_validation",
-            "passed": true
-          },
-          {
-            "test": "invalid_trace_data",
-            "passed": true
-          }
-        ],
-        "passed_tests": 4,
-        "total_tests": 4
-      }
+      "error_message": ""
     },
     {
-      "name": "Simulation Performance",
-      "passed": true,
-      "score": 1.0,
-      "critical": false,
-      "execution_time": 0.021538990999943053,
-      "details": {
-        "results": [
-          {
-            "test": "small_batch",
-            "n_traces": 100,
-            "trace_length": 1000,
-            "time": 0.0032671369999661692,
-            "throughput": 30607.83799425475,
-            "requirement": 1000,
-            "passed": true
-          },
-          {
-            "test": "medium_batch",
-            "n_traces": 1000,
-            "trace_length": 1000,
-            "time": 0.017247252000061053,
-            "throughput": 57980.25099862054,
-            "requirement": 500,
-            "passed": true
-          }
-        ]
-      }
+      "name": "Unit Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 1.2283234596252441,
+      "critical": true,
+      "error_message": ""
     },
     {
-      "name": "Memory Efficiency",
-      "passed": true,
-      "score": 1.0,
-      "critical": false,
-      "execution_time": 0.28423491099988496,
-      "details": {
-        "estimated_memory_mb": 19.074440002441406,
-        "trace_shape": [
-          1000,
-          5000
-        ],
-        "operations_successful": true
-      }
+      "name": "Integration Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 1.2568981647491455,
+      "critical": true,
+      "error_message": ""
     },
     {
-      "name": "Documentation",
-      "passed": true,
-      "score": 1.0,
+      "name": "Performance Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 1.2088017463684082,
       "critical": false,
-      "execution_time": 0.0026526679998823965,
-      "details": {
-        "documentation_scores": {
-          "readme_exists": true,
-          "has_installation": true,
-          "has_usage": true,
-          "has_features": true,
-          "has_architecture": true,
-          "readme_length": true,
-          "has_contributing.md": true,
-          "has_security.md": true,
-          "has_changelog.md": true,
-          "has_deployment.md": true,
-          "has_license": true,
-          "code_documentation_ratio": 1.0
-        },
-        "total_score": 110.0,
-        "max_score": 110,
-        "python_files_count": 29,
-        "documented_files_count": 29
-      }
+      "error_message": ""
+    },
+    {
+      "name": "Security Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 1.0112965106964111,
+      "critical": true,
+      "error_message": ""
+    },
+    {
+      "name": "Research Quality Gates",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 2.5809075832366943,
+      "critical": true,
+      "error_message": ""
     }
+  ],
+  "failed_gates": [
+    {
+      "name": "Security Check",
+      "critical": true,
+      "error": "/root/repo/scripts/security_check.py:123: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead\n  def visit_Str(self, node: ast.Str):\n",
+      "details": {}
+    },
+    {
+      "name": "Test Coverage",
+      "critical": true,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Unit Tests",
+      "critical": true,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Integration Tests",
+      "critical": true,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Performance Tests",
+      "critical": false,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Security Tests",
+      "critical": true,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Research Quality Gates",
+      "critical": true,
+      "error": "",
+      "details": {}
+    }
+  ],
+  "recommendations": [
+    "Fix critical quality gate failures before proceeding to production",
+    "High failure rate indicates systematic quality issues",
+    "Address security vulnerabilities before deployment",
+    "Increase test coverage to meet quality standards",
+    "Investigate performance regressions and optimize where needed"
   ]
 }

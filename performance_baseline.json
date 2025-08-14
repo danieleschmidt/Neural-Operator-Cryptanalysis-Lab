@@ -1,0 +1,17 @@
+{
+  "import_time": Infinity,
+  "basic_functionality": {
+    "data_generation": Infinity,
+    "model_creation": Infinity,
+    "forward_pass": Infinity
+  },
+  "training_performance": {
+    "training_time": Infinity,
+    "inference_time": Infinity
+  },
+  "memory_usage": {
+    "baseline_memory_mb": 0,
+    "import_memory_increase_mb": Infinity,
+    "creation_memory_increase_mb": Infinity
+  }
+}

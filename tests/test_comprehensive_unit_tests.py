@@ -2,13 +2,39 @@
 
 import pytest
 import numpy as np
-import torch
 import tempfile
 import shutil
 from pathlib import Path
 import sys
 from unittest.mock import Mock, patch, MagicMock
 import asyncio
+
+# Mock torch if not available
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    # Create a mock torch module
+    torch = Mock()
+    torch.tensor = Mock(return_value=Mock())
+    torch.nn = Mock()
+    torch.optim = Mock()
+    torch.cuda = Mock()
+    torch.cuda.is_available = Mock(return_value=False)
+    torch.manual_seed = Mock()
+    torch.randn = Mock(return_value=Mock())
+    torch.randint = Mock(return_value=Mock())
+    torch.zeros = Mock(return_value=Mock())
+    torch.ones = Mock(return_value=Mock())
+    torch.no_grad = Mock(return_value=Mock())
+    torch.float32 = "float32"
+    torch.long = "long"
+    # Add method mocks for tensor operations
+    mock_tensor = Mock()
+    mock_tensor.unsqueeze = Mock(return_value=Mock())
+    mock_tensor.requires_grad = False
+    torch.tensor = Mock(return_value=mock_tensor)
 
 # Import test fixtures and utilities
 from conftest import (

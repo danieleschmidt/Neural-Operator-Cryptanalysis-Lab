@@ -5,7 +5,7 @@ import hmac
 import time
 import json
 import os
-from typing import Dict, List, Any, Optional, Callable
+from typing import Dict, List, Any, Optional, Callable, Tuple
 from pathlib import Path
 from datetime import datetime, timedelta
 import secrets

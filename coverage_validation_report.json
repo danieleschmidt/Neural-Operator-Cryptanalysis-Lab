@@ -1,0 +1,37 @@
+{
+  "timestamp": "repo",
+  "coverage_summary": {
+    "total_coverage": 0.0,
+    "minimum_required": 85.0,
+    "grade": "F",
+    "passed_requirements": false
+  },
+  "module_statistics": {
+    "total_modules": 0,
+    "average_coverage": 0,
+    "minimum_coverage": 0,
+    "maximum_coverage": 0,
+    "modules_below_threshold": 0
+  },
+  "quality_issues": {
+    "total_issues": 1,
+    "critical_issues": 1,
+    "medium_issues": 0,
+    "issues": [
+      {
+        "type": "no_coverage_data",
+        "severity": "critical",
+        "message": "No coverage data available",
+        "recommendation": "Ensure tests run successfully and coverage is collected"
+      }
+    ]
+  },
+  "missing_coverage": {
+    "untested_files": [],
+    "critical_modules_missing": []
+  },
+  "recommendations": [
+    "Increase overall coverage by 85.0% to meet minimum requirement"
+  ],
+  "detailed_module_coverage": {}
+}

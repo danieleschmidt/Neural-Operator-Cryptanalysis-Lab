@@ -1,0 +1,170 @@
+{
+  "timestamp": "/root/repo",
+  "total_issues": 20,
+  "critical_issues": 20,
+  "high_issues": 0,
+  "medium_issues": 0,
+  "security_score": 0,
+  "issues": [
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 308,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 549,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 365,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 371,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 422,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 510,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 164,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/cli.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 284,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 284,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 382,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 629,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 706,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/core.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 537,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/hardware_integration.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 113,
+      "message": "Dangerous function call: setattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 767,
+      "message": "Dangerous function call: setattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 311,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/optimization.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 337,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/optimization.py"
+    },
+    {
+      "type": "hardcoded_secret",
+      "severity": "critical",
+      "line": 26,
+      "message": "Potential hardcoded secret: key_recovery",
+      "recommendation": "Use environment variables or secure configuration",
+      "file": "src/neural_cryptanalysis/security.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 376,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/security.py"
+    },
+    {
+      "type": "dangerous_function",
+      "severity": "critical",
+      "line": 380,
+      "message": "Dangerous function call: hasattr",
+      "recommendation": "Use safer alternatives or add security validation",
+      "file": "src/neural_cryptanalysis/security.py"
+    }
+  ]
+}

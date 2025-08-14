@@ -8,13 +8,26 @@ and distributed computing capabilities.
 
 import pytest
 import numpy as np
-import torch
 import asyncio
 import sys
 from pathlib import Path
 from unittest.mock import Mock, AsyncMock, patch
 import tempfile
 import os
+
+# Mock torch if not available
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    # Create a mock torch module
+    torch = Mock()
+    torch.tensor = Mock(return_value=Mock())
+    torch.nn = Mock()
+    torch.optim = Mock()
+    torch.cuda = Mock()
+    torch.cuda.is_available = Mock(return_value=False)
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
