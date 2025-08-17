@@ -1,6 +1,6 @@
 {
-  "timestamp": 1755144956.8584526,
-  "execution_time_seconds": 4.378912448883057,
+  "timestamp": 1755386900.0903342,
+  "execution_time_seconds": 4.265094757080078,
   "overall_status": "FAILED",
   "overall_score": 30.0,
   "statistics": {
@@ -20,7 +20,7 @@
       "name": "Import Validation",
       "passed": true,
       "score": 100.0,
-      "execution_time": 0.3816711902618408,
+      "execution_time": 0.3600614070892334,
       "critical": true,
       "error_message": ""
     },
@@ -28,7 +28,7 @@
       "name": "Security Check",
       "passed": false,
       "score": 0.0,
-      "execution_time": 0.5643770694732666,
+      "execution_time": 0.5746521949768066,
       "critical": true,
       "error_message": "/root/repo/scripts/security_check.py:123: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead\n  def visit_Str(self, node: ast.Str):\n"
     },
@@ -36,7 +36,7 @@
       "name": "Documentation Check",
       "passed": true,
       "score": 100.0,
-      "execution_time": 0.5090224742889404,
+      "execution_time": 0.5278141498565674,
       "critical": false,
       "error_message": ""
     },
@@ -44,7 +44,7 @@
       "name": "Test Coverage",
       "passed": false,
       "score": 0.0,
-      "execution_time": 1.063551425933838,
+      "execution_time": 1.1088876724243164,
       "critical": true,
       "error_message": ""
     },
@@ -52,7 +52,7 @@
       "name": "Performance Regression",
       "passed": true,
       "score": 100.0,
-      "execution_time": 1.4000234603881836,
+      "execution_time": 1.477038860321045,
       "critical": false,
       "error_message": ""
     },
@@ -60,7 +60,7 @@
       "name": "Unit Tests",
       "passed": false,
       "score": 0.0,
-      "execution_time": 1.2283234596252441,
+      "execution_time": 1.1906681060791016,
       "critical": true,
       "error_message": ""
     },
@@ -68,7 +68,7 @@
       "name": "Integration Tests",
       "passed": false,
       "score": 0.0,
-      "execution_time": 1.2568981647491455,
+      "execution_time": 1.1959669589996338,
       "critical": true,
       "error_message": ""
     },
@@ -76,7 +76,7 @@
       "name": "Performance Tests",
       "passed": false,
       "score": 0.0,
-      "execution_time": 1.2088017463684082,
+      "execution_time": 1.1940479278564453,
       "critical": false,
       "error_message": ""
     },
@@ -84,7 +84,7 @@
       "name": "Security Tests",
       "passed": false,
       "score": 0.0,
-      "execution_time": 1.0112965106964111,
+      "execution_time": 0.9235649108886719,
       "critical": true,
       "error_message": ""
     },
@@ -92,7 +92,7 @@
       "name": "Research Quality Gates",
       "passed": false,
       "score": 0.0,
-      "execution_time": 2.5809075832366943,
+      "execution_time": 2.4938058853149414,
       "critical": true,
       "error_message": ""
     }
