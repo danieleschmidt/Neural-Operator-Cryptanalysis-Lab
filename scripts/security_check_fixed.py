@@ -17,9 +17,10 @@ class SecurityChecker(ast.NodeVisitor):
         self.filename = filename
         self.issues: List[Dict[str, Any]] = []
         
-        # Define security patterns - only truly dangerous functions
+        # Define security patterns
         self.dangerous_functions = {
-            'eval', 'exec', 'compile', '__import__', 'globals', 'locals'
+            'eval', 'exec', 'compile', '__import__', 'globals', 'locals',
+            'getattr', 'setattr', 'delattr', 'hasattr'
         }
         
         self.shell_commands = {
@@ -40,11 +41,13 @@ class SecurityChecker(ast.NodeVisitor):
             r'sha1\(',  # Weak hash
         ]
         
-        # Hardcoded secrets patterns - exclude legitimate variable names
+        # Hardcoded secrets patterns
         self.secret_patterns = [
-            r'password\s*=\s*["\'][a-zA-Z0-9!@#$%^&*]{12,}["\']',  # Real passwords are long
-            r'api_key\s*=\s*["\'][a-zA-Z0-9]{20,}["\']',  # API keys are long
-            r'token\s*=\s*["\'][a-zA-Z0-9\.]{30,}["\']',  # Tokens are long
+            r'password\s*=\s*["\'][^"\']+["\']',
+            r'secret\s*=\s*["\'][^"\']+["\']',
+            r'key\s*=\s*["\'][^"\']+["\']',
+            r'token\s*=\s*["\'][^"\']+["\']',
+            r'api_key\s*=\s*["\'][^"\']+["\']',
         ]
     
     def visit_Call(self, node: ast.Call):
@@ -105,15 +108,15 @@ class SecurityChecker(ast.NodeVisitor):
                     var_name = target.id.lower()
                     
                     # Check for suspicious variable names with string values
-                    # Only flag if it's a genuinely suspicious assignment
-                    if 'password' in var_name and len(value) > 12 and not self._is_test_value(value):
-                        self.issues.append({
-                            'type': 'hardcoded_secret',
-                            'severity': 'critical',
-                            'line': node.lineno,
-                            'message': f'Potential hardcoded password: {var_name}',
-                            'recommendation': 'Use environment variables or secure configuration'
-                        })
+                    if any(secret in var_name for secret in ['password', 'secret', 'key', 'token']):
+                        if len(value) > 8 and not self._is_test_value(value):
+                            self.issues.append({
+                                'type': 'hardcoded_secret',
+                                'severity': 'critical',
+                                'line': node.lineno,
+                                'message': f'Potential hardcoded secret: {var_name}',
+                                'recommendation': 'Use environment variables or secure configuration'
+                            })
         
         self.generic_visit(node)
     

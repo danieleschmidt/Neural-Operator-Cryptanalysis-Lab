@@ -1,170 +1,533 @@
 {
   "timestamp": "/root/repo",
-  "total_issues": 20,
-  "critical_issues": 20,
-  "high_issues": 0,
-  "medium_issues": 0,
-  "security_score": 0,
-  "issues": [
+  "total_files": 60,
+  "total_issues": 6,
+  "critical_issues": 0,
+  "files": [
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 308,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+      "file": "/root/repo/src/neural_cryptanalysis/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 549,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/adaptive_rl.py"
+      "file": "/root/repo/src/neural_cryptanalysis/adaptive_rl.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 365,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+      "file": "/root/repo/src/neural_cryptanalysis/advanced_countermeasures.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 371,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+      "file": "/root/repo/src/neural_cryptanalysis/cli.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 422,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+      "file": "/root/repo/src/neural_cryptanalysis/core.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 510,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/advanced_countermeasures.py"
+      "file": "/root/repo/src/neural_cryptanalysis/distributed_computing.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 164,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/cli.py"
+      "file": "/root/repo/src/neural_cryptanalysis/hardware_integration.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 284,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/core.py"
+      "file": "/root/repo/src/neural_cryptanalysis/multi_modal_fusion.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 284,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/core.py"
+      "file": "/root/repo/src/neural_cryptanalysis/optimization.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 382,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/core.py"
+      "file": "/root/repo/src/neural_cryptanalysis/security.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 629,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/core.py"
+      "file": "/root/repo/src/neural_cryptanalysis/datasets/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 706,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/core.py"
+      "file": "/root/repo/src/neural_cryptanalysis/datasets/synthetic.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 537,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/hardware_integration.py"
+      "file": "/root/repo/src/neural_cryptanalysis/i18n/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 113,
-      "message": "Dangerous function call: setattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 767,
-      "message": "Dangerous function call: setattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/multi_modal_fusion.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/base.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 311,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/optimization.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/custom.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 337,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/optimization.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/deeponet.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "hardcoded_secret",
-      "severity": "critical",
-      "line": 26,
-      "message": "Potential hardcoded secret: key_recovery",
-      "recommendation": "Use environment variables or secure configuration",
-      "file": "src/neural_cryptanalysis/security.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/fno.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 376,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/security.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/graph_neural_operators.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     },
     {
-      "type": "dangerous_function",
-      "severity": "critical",
-      "line": 380,
-      "message": "Dangerous function call: hasattr",
-      "recommendation": "Use safer alternatives or add security validation",
-      "file": "src/neural_cryptanalysis/security.py"
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/physics_informed_operators.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/transformer_operators.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/benchmarking.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/neural_operator_optimization.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/performance_optimizer.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/research_acceleration.py",
+      "issues": [
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 332,
+          "message": "Pickle usage detected: pickle.dump",
+          "recommendation": "Use safer serialization methods like JSON"
+        }
+      ],
+      "total_issues": 1,
+      "critical_issues": 0,
+      "high_issues": 1,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/optimization/self_healing.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/adaptive_learning.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/auto_scaling.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/i18n_integration.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/monitoring.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/resilience.py",
+      "issues": [
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 638,
+          "message": "Pickle usage detected: pickle.dump",
+          "recommendation": "Use safer serialization methods like JSON"
+        },
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 661,
+          "message": "Pickle usage detected: pickle.load",
+          "recommendation": "Use safer serialization methods like JSON"
+        },
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 684,
+          "message": "Pickle usage detected: pickle.load",
+          "recommendation": "Use safer serialization methods like JSON"
+        }
+      ],
+      "total_issues": 3,
+      "critical_issues": 0,
+      "high_issues": 3,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/pipeline/self_healing_guard.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/acoustic.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/attacks.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/base.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/electromagnetic.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/fusion.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/power.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/side_channels/preprocessing.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/targets/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/targets/base.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/targets/post_quantum.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/config.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/data_utils.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/errors.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/logging_utils.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/monitoring.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/performance.py",
+      "issues": [
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 214,
+          "message": "Pickle usage detected: pickle.load",
+          "recommendation": "Use safer serialization methods like JSON"
+        },
+        {
+          "type": "deserialization",
+          "severity": "high",
+          "line": 240,
+          "message": "Pickle usage detected: pickle.dump",
+          "recommendation": "Use safer serialization methods like JSON"
+        }
+      ],
+      "total_issues": 2,
+      "critical_issues": 0,
+      "high_issues": 2,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/reliability.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/security.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/security_enhanced.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/validation.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/utils/visualization.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/visualization/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/visualization/trace_plots.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/i18n/compliance/__init__.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
     }
   ]
 }
