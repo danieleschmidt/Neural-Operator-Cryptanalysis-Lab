@@ -1,5 +1,5 @@
 {
-  "timestamp": 1755386897.2798567,
+  "timestamp": 1755517693.4915898,
   "current_results": {
     "import_time": Infinity,
     "basic_functionality": {
@@ -12,9 +12,9 @@
       "inference_time": Infinity
     },
     "memory_usage": {
-      "baseline_memory_mb": 0,
-      "import_memory_increase_mb": Infinity,
-      "creation_memory_increase_mb": Infinity
+      "baseline_memory_mb": 12.46,
+      "import_memory_increase_mb": 271.92,
+      "creation_memory_increase_mb": 280.29
     }
   },
   "baseline_exists": true,

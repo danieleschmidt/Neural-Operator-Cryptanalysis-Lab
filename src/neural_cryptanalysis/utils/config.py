@@ -247,6 +247,10 @@ def create_experiment_config(
     return manager.to_dict()
 
 
+# Alias for backwards compatibility  
+Config = ConfigManager
+
+
 def validate_config(config: Dict[str, Any]) -> List[str]:
     """Validate configuration and return list of issues.
     
