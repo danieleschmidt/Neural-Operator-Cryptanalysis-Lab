@@ -540,6 +540,38 @@ class random:
     randint = random_randint
     normal = random_normal
     permutation = random_permutation
+    
+    @staticmethod
+    def uniform(low=0.0, high=1.0, size=None):
+        """Generate uniform random numbers."""
+        if size is None:
+            return python_random.uniform(low, high)
+        elif isinstance(size, int):
+            return MockArray([python_random.uniform(low, high) for _ in range(size)])
+        elif isinstance(size, tuple):
+            total_size = 1
+            for dim in size:
+                total_size *= dim
+            result = MockArray([python_random.uniform(low, high) for _ in range(total_size)])
+            result.shape = size
+            return result
+        return MockArray([python_random.uniform(low, high)])
+    
+    @staticmethod
+    def exponential(scale=1.0, size=None):
+        """Generate exponential random numbers."""
+        if size is None:
+            return python_random.expovariate(1.0 / scale)
+        elif isinstance(size, int):
+            return MockArray([python_random.expovariate(1.0 / scale) for _ in range(size)])
+        elif isinstance(size, tuple):
+            total_size = 1
+            for dim in size:
+                total_size *= dim
+            result = MockArray([python_random.expovariate(1.0 / scale) for _ in range(total_size)])
+            result.shape = size
+            return result
+        return MockArray([python_random.expovariate(1.0 / scale)])
 
 # Module-level constants
 pi = math.pi
@@ -615,6 +647,19 @@ def module_sum(arr, axis=None, dtype=None, keepdims=False):
     return arr
 
 numpy_mock.sum = module_sum
+
+# Add mean function at module level
+def module_mean(arr, axis=None, dtype=None, keepdims=False):
+    """Module-level mean function."""
+    if isinstance(arr, MockArray):
+        return arr.mean(axis)
+    elif hasattr(arr, '__iter__'):
+        total = module_sum(arr, axis)
+        count = len(list(arr)) if hasattr(arr, '__len__') else 1
+        return total / count if count > 0 else 0
+    return arr
+
+numpy_mock.mean = module_mean
 
 # Add more missing functions
 def round_func(arr, decimals=0):
