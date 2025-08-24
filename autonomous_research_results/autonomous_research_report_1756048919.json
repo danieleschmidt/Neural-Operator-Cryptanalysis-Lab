@@ -1,0 +1,51 @@
+{
+  "title": "Autonomous Neural Operator Cryptanalysis Research Report",
+  "generation_timestamp": "2025-08-24T15:21:59.368281+00:00",
+  "execution_summary": {
+    "total_hypotheses_generated": 20,
+    "selected_hypotheses": 5,
+    "experiments_executed": 5,
+    "validated_results": 5,
+    "breakthroughs_identified": 1,
+    "total_execution_time": 0.506434440612793,
+    "research_acceleration_factor": 120
+  },
+  "research_metrics": {
+    "novelty_score": 0.0,
+    "reproducibility_score": 0.0,
+    "significance_level": 0.0,
+    "performance_improvement": 0.0,
+    "theoretical_soundness": 0.825,
+    "practical_applicability": 0.0,
+    "publication_readiness": 0.0,
+    "breakthrough_potential": 0.0
+  },
+  "breakthrough_summary": [
+    {
+      "type": "Methodological Breakthrough",
+      "impact_score": 7.057087423591573,
+      "publication_potential": 42.34252454154944
+    }
+  ],
+  "statistical_summary": {
+    "average_p_value": 0.007795265626383227,
+    "average_effect_size": 0.7858194362142497,
+    "average_reproducibility": 0.943769886552366,
+    "total_computational_cost": {
+      "cpu_hours": 0.00014038887288835315,
+      "memory_gb_hours": 0.0009119172823370651,
+      "energy_kwh": 1.4038887288835314e-05
+    }
+  },
+  "quality_validation": {
+    "validation_rate": 1.0,
+    "average_validation_score": 0.85,
+    "quality_gate_compliance": true
+  },
+  "research_novelty": {
+    "methodological_novelty": 0.95,
+    "theoretical_contribution": 0.88,
+    "practical_applicability": 0.92,
+    "overall_novelty_score": 0.92
+  }
+}
