@@ -1,0 +1,222 @@
+[
+  {
+    "id": "H017",
+    "domain": "defensive_techniques",
+    "topic": "Real-time leakage assessment systems",
+    "hypothesis": "Neural operators can significantly improve real-time leakage assessment systems with statistical significance p < 0.01",
+    "priority_score": 85.89067033564174,
+    "feasibility_score": 95.43775181764038,
+    "novelty_score": 70.37683546628314,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861128+00:00"
+  },
+  {
+    "id": "H014",
+    "domain": "attack_methodologies",
+    "topic": "Countermeasure-aware attack evolution",
+    "hypothesis": "Neural operators can significantly improve countermeasure-aware attack evolution with statistical significance p < 0.01",
+    "priority_score": 99.3447795283958,
+    "feasibility_score": 51.64588441116452,
+    "novelty_score": 87.43881177221044,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861115+00:00"
+  },
+  {
+    "id": "H019",
+    "domain": "defensive_techniques",
+    "topic": "Quantum-resistant defensive mechanisms",
+    "hypothesis": "Neural operators can significantly improve quantum-resistant defensive mechanisms with statistical significance p < 0.01",
+    "priority_score": 94.74557975943763,
+    "feasibility_score": 59.02793677996302,
+    "novelty_score": 74.7450322370033,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861140+00:00"
+  },
+  {
+    "id": "H006",
+    "domain": "cryptographic_targets",
+    "topic": "Code-based cryptography (Classic McEliece)",
+    "hypothesis": "Neural operators can significantly improve code-based cryptography (classic mceliece) with statistical significance p < 0.01",
+    "priority_score": 91.24801339858162,
+    "feasibility_score": 37.88794124111471,
+    "novelty_score": 85.45795946691511,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861072+00:00"
+  },
+  {
+    "id": "H018",
+    "domain": "defensive_techniques",
+    "topic": "Automated secure implementation generation",
+    "hypothesis": "Neural operators can significantly improve automated secure implementation generation with statistical significance p < 0.01",
+    "priority_score": 39.35617439353035,
+    "feasibility_score": 89.15814862928498,
+    "novelty_score": 79.25355958028322,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861133+00:00"
+  },
+  {
+    "id": "H015",
+    "domain": "defensive_techniques",
+    "topic": "Neural operator-based countermeasure evaluation",
+    "hypothesis": "Neural operators can significantly improve neural operator-based countermeasure evaluation with statistical significance p < 0.01",
+    "priority_score": 63.74567550135978,
+    "feasibility_score": 37.87606681841115,
+    "novelty_score": 97.06574866625999,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861119+00:00"
+  },
+  {
+    "id": "H011",
+    "domain": "attack_methodologies",
+    "topic": "Horizontal correlation attacks with deep learning",
+    "hypothesis": "Neural operators can significantly improve horizontal correlation attacks with deep learning with statistical significance p < 0.01",
+    "priority_score": 51.57531251395531,
+    "feasibility_score": 62.46366863788002,
+    "novelty_score": 75.88325786903121,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861099+00:00"
+  },
+  {
+    "id": "H009",
+    "domain": "cryptographic_targets",
+    "topic": "Hybrid classical-quantum systems",
+    "hypothesis": "Neural operators can significantly improve hybrid classical-quantum systems with statistical significance p < 0.01",
+    "priority_score": 1.1928338069685518,
+    "feasibility_score": 99.18371596196222,
+    "novelty_score": 81.72387198946502,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861090+00:00"
+  },
+  {
+    "id": "H004",
+    "domain": "neural_operators",
+    "topic": "Quantum-resistant neural operator architectures",
+    "hypothesis": "Neural operators can significantly improve quantum-resistant neural operator architectures with statistical significance p < 0.01",
+    "priority_score": 57.151953266656996,
+    "feasibility_score": 95.78593283632458,
+    "novelty_score": 19.208254037243456,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861062+00:00"
+  },
+  {
+    "id": "H016",
+    "domain": "defensive_techniques",
+    "topic": "Adaptive masking against AI-driven attacks",
+    "hypothesis": "Neural operators can significantly improve adaptive masking against ai-driven attacks with statistical significance p < 0.01",
+    "priority_score": 35.3277583882934,
+    "feasibility_score": 63.23808902298141,
+    "novelty_score": 67.43980828708527,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861124+00:00"
+  },
+  {
+    "id": "H012",
+    "domain": "attack_methodologies",
+    "topic": "Multi-channel fusion for enhanced leakage extraction",
+    "hypothesis": "Neural operators can significantly improve multi-channel fusion for enhanced leakage extraction with statistical significance p < 0.01",
+    "priority_score": 31.828501963253476,
+    "feasibility_score": 48.98439609787884,
+    "novelty_score": 83.33237807647279,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861103+00:00"
+  },
+  {
+    "id": "H008",
+    "domain": "cryptographic_targets",
+    "topic": "Isogeny-based cryptography analysis",
+    "hypothesis": "Neural operators can significantly improve isogeny-based cryptography analysis with statistical significance p < 0.01",
+    "priority_score": 15.977103900720524,
+    "feasibility_score": 43.58134606944451,
+    "novelty_score": 95.25713703779492,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861085+00:00"
+  },
+  {
+    "id": "H003",
+    "domain": "neural_operators",
+    "topic": "Transformer-based neural operators for sequential leakage",
+    "hypothesis": "Neural operators can significantly improve transformer-based neural operators for sequential leakage with statistical significance p < 0.01",
+    "priority_score": 39.562991075322564,
+    "feasibility_score": 68.35448354434553,
+    "novelty_score": 45.21971877246666,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861057+00:00"
+  },
+  {
+    "id": "H007",
+    "domain": "cryptographic_targets",
+    "topic": "Hash-based signatures (SPHINCS+)",
+    "hypothesis": "Neural operators can significantly improve hash-based signatures (sphincs+) with statistical significance p < 0.01",
+    "priority_score": 31.384279842871333,
+    "feasibility_score": 14.300962131931893,
+    "novelty_score": 88.87388294131729,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861077+00:00"
+  },
+  {
+    "id": "H013",
+    "domain": "attack_methodologies",
+    "topic": "Real-time adaptive attack parameter optimization",
+    "hypothesis": "Neural operators can significantly improve real-time adaptive attack parameter optimization with statistical significance p < 0.01",
+    "priority_score": 24.013187912339816,
+    "feasibility_score": 62.06066294206878,
+    "novelty_score": 45.953462731986725,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861110+00:00"
+  },
+  {
+    "id": "H001",
+    "domain": "neural_operators",
+    "topic": "Physics-informed neural operators for cryptanalysis",
+    "hypothesis": "Neural operators can significantly improve physics-informed neural operators for cryptanalysis with statistical significance p < 0.01",
+    "priority_score": 32.71663949537371,
+    "feasibility_score": 71.32141263443398,
+    "novelty_score": 25.563449426745766,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861043+00:00"
+  },
+  {
+    "id": "H010",
+    "domain": "attack_methodologies",
+    "topic": "Adaptive template attacks using neural operators",
+    "hypothesis": "Neural operators can significantly improve adaptive template attacks using neural operators with statistical significance p < 0.01",
+    "priority_score": 23.15180748700615,
+    "feasibility_score": 60.0404975954417,
+    "novelty_score": 7.6884006157085345,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861094+00:00"
+  },
+  {
+    "id": "H000",
+    "domain": "neural_operators",
+    "topic": "Fourier Neural Operators for side-channel modeling",
+    "hypothesis": "Neural operators can significantly improve fourier neural operators for side-channel modeling with statistical significance p < 0.01",
+    "priority_score": 1.0447344613414011,
+    "feasibility_score": 66.64671000828515,
+    "novelty_score": 14.737118891414747,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861010+00:00"
+  },
+  {
+    "id": "H005",
+    "domain": "cryptographic_targets",
+    "topic": "Post-quantum lattice-based schemes (Kyber, Dilithium)",
+    "hypothesis": "Neural operators can significantly improve post-quantum lattice-based schemes (kyber, dilithium) with statistical significance p < 0.01",
+    "priority_score": 13.032387063688056,
+    "feasibility_score": 21.987637394395765,
+    "novelty_score": 33.03397307920379,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861067+00:00"
+  },
+  {
+    "id": "H002",
+    "domain": "neural_operators",
+    "topic": "Graph neural operators for implementation-agnostic attacks",
+    "hypothesis": "Neural operators can significantly improve graph neural operators for implementation-agnostic attacks with statistical significance p < 0.01",
+    "priority_score": 15.174044778658569,
+    "feasibility_score": 31.250490650620055,
+    "novelty_score": 6.801586695487694,
+    "status": "generated",
+    "generation_timestamp": "2025-08-24T15:21:58.861051+00:00"
+  }
+]

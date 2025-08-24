@@ -1,0 +1,22 @@
+{
+  "src/neural_cryptanalysis/neural_operators": {
+    "exists": true,
+    "file_count": 8,
+    "complexity_score": 80
+  },
+  "src/neural_cryptanalysis/side_channels": {
+    "exists": true,
+    "file_count": 8,
+    "complexity_score": 80
+  },
+  "research": {
+    "exists": true,
+    "file_count": 7,
+    "complexity_score": 70
+  },
+  "tests": {
+    "exists": true,
+    "file_count": 11,
+    "complexity_score": 100
+  }
+}
