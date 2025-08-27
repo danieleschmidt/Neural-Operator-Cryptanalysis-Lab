@@ -6,7 +6,8 @@ hyperparameter optimization, A/B testing, and automated benchmarking.
 
 import time
 import json
-import pickle
+import base64
+import numpy as np
 import threading
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -109,6 +110,30 @@ class ExperimentManager:
         self._load_existing_experiments()
         
         logger.info(f"Experiment manager initialized: {self.workspace_dir}")
+    
+    def _serialize_artifact_safely(self, artifact: Any) -> Dict[str, Any]:
+        """Safely serialize artifacts to JSON-compatible format."""
+        if isinstance(artifact, np.ndarray):
+            return {
+                'type': 'numpy_array',
+                'dtype': str(artifact.dtype),
+                'shape': artifact.shape,
+                'data': base64.b64encode(artifact.tobytes()).decode('utf-8')
+            }
+        elif hasattr(artifact, '__dict__'):
+            # Handle objects with attributes
+            try:
+                return {
+                    'type': 'object',
+                    'class': artifact.__class__.__name__,
+                    'data': {k: v for k, v in artifact.__dict__.items() if isinstance(v, (str, int, float, bool, list, dict))}
+                }
+            except Exception:
+                return {'type': 'error', 'message': 'Unable to serialize object safely'}
+        elif isinstance(artifact, (str, int, float, bool, list, dict)):
+            return {'type': 'primitive', 'data': artifact}
+        else:
+            return {'type': 'string_repr', 'data': str(artifact)}
     
     def create_experiment(self, config: ExperimentConfig) -> str:
         """Create a new experiment."""
@@ -328,8 +353,10 @@ class ExperimentManager:
             for name, artifact in result.artifacts.items():
                 artifact_path = artifacts_dir / f"{name}.pkl"
                 try:
-                    with open(artifact_path, 'wb') as f:
-                        pickle.dump(artifact, f)
+                    # Use secure JSON serialization for artifacts
+                    artifact_json = self._serialize_artifact_safely(artifact)
+                    with open(artifact_path.with_suffix('.json'), 'w') as f:
+                        json.dump(artifact_json, f, indent=2)
                 except Exception as e:
                     logger.warning(f"Failed to save artifact {name}: {e}")
     

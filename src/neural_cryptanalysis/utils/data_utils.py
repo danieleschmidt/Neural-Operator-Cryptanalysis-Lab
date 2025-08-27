@@ -1,8 +1,26 @@
 """Data utilities for neural cryptanalysis."""
 
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple, Any, Union
 from pathlib import Path
+
+
+def validate_input_data(data: Any, expected_type: type = None, min_shape: Tuple = None) -> bool:
+    """Validate input data for neural cryptanalysis operations."""
+    if data is None:
+        return False
+    
+    if expected_type and not isinstance(data, expected_type):
+        return False
+    
+    if hasattr(data, 'shape') and min_shape:
+        if len(data.shape) < len(min_shape):
+            return False
+        for i, min_dim in enumerate(min_shape):
+            if min_dim is not None and data.shape[i] < min_dim:
+                return False
+    
+    return True
 
 
 class TraceLoader:

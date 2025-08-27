@@ -20,7 +20,7 @@ from .post_quantum import (
     KyberImplementation, DilithiumImplementation, 
     ClassicMcElieceImplementation, SPHINCSImplementation
 )
-from .classical import AESImplementation, RSAImplementation, ECCImplementation
+from .classical import AESTarget, RSATarget, ECCTarget
 
 __all__ = [
     "CryptographicTarget",
@@ -29,7 +29,7 @@ __all__ = [
     "DilithiumImplementation",
     "ClassicMcElieceImplementation",
     "SPHINCSImplementation",
-    "AESImplementation",
-    "RSAImplementation", 
-    "ECCImplementation",
+    "AESTarget",
+    "RSATarget", 
+    "ECCTarget",
 ]

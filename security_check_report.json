@@ -1,7 +1,7 @@
 {
   "timestamp": "/root/repo",
-  "total_files": 60,
-  "total_issues": 6,
+  "total_files": 64,
+  "total_issues": 0,
   "critical_issues": 0,
   "files": [
     {
@@ -117,7 +117,23 @@
       "medium_issues": 0
     },
     {
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/architecture_search.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
       "file": "/root/repo/src/neural_cryptanalysis/neural_operators/base.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/causal_operators.py",
       "issues": [],
       "total_issues": 0,
       "critical_issues": 0,
@@ -149,7 +165,23 @@
       "medium_issues": 0
     },
     {
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/foundation_models.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
       "file": "/root/repo/src/neural_cryptanalysis/neural_operators/graph_neural_operators.py",
+      "issues": [],
+      "total_issues": 0,
+      "critical_issues": 0,
+      "high_issues": 0,
+      "medium_issues": 0
+    },
+    {
+      "file": "/root/repo/src/neural_cryptanalysis/neural_operators/neuro_symbolic.py",
       "issues": [],
       "total_issues": 0,
       "critical_issues": 0,
@@ -206,18 +238,10 @@
     },
     {
       "file": "/root/repo/src/neural_cryptanalysis/optimization/research_acceleration.py",
-      "issues": [
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 332,
-          "message": "Pickle usage detected: pickle.dump",
-          "recommendation": "Use safer serialization methods like JSON"
-        }
-      ],
-      "total_issues": 1,
+      "issues": [],
+      "total_issues": 0,
       "critical_issues": 0,
-      "high_issues": 1,
+      "high_issues": 0,
       "medium_issues": 0
     },
     {
@@ -270,32 +294,10 @@
     },
     {
       "file": "/root/repo/src/neural_cryptanalysis/pipeline/resilience.py",
-      "issues": [
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 638,
-          "message": "Pickle usage detected: pickle.dump",
-          "recommendation": "Use safer serialization methods like JSON"
-        },
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 661,
-          "message": "Pickle usage detected: pickle.load",
-          "recommendation": "Use safer serialization methods like JSON"
-        },
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 684,
-          "message": "Pickle usage detected: pickle.load",
-          "recommendation": "Use safer serialization methods like JSON"
-        }
-      ],
-      "total_issues": 3,
+      "issues": [],
+      "total_issues": 0,
       "critical_issues": 0,
-      "high_issues": 3,
+      "high_issues": 0,
       "medium_issues": 0
     },
     {
@@ -444,25 +446,10 @@
     },
     {
       "file": "/root/repo/src/neural_cryptanalysis/utils/performance.py",
-      "issues": [
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 214,
-          "message": "Pickle usage detected: pickle.load",
-          "recommendation": "Use safer serialization methods like JSON"
-        },
-        {
-          "type": "deserialization",
-          "severity": "high",
-          "line": 240,
-          "message": "Pickle usage detected: pickle.dump",
-          "recommendation": "Use safer serialization methods like JSON"
-        }
-      ],
-      "total_issues": 2,
+      "issues": [],
+      "total_issues": 0,
       "critical_issues": 0,
-      "high_issues": 2,
+      "high_issues": 0,
       "medium_issues": 0
     },
     {

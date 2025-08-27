@@ -1,0 +1,285 @@
+{
+  "framework_version": "4.0",
+  "start_time": 1756305779.4563565,
+  "generations": {
+    "generation_1": {
+      "generation": 1,
+      "description": "Core functionality validation",
+      "gates": {
+        "core_imports": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 0.032855987548828125,
+          "tests": [
+            {
+              "name": "neural_cryptanalysis_import",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Main package imported successfully"
+            },
+            {
+              "name": "neural_cryptanalysis.core_import",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "Module neural_cryptanalysis.core imported successfully"
+            },
+            {
+              "name": "neural_cryptanalysis.neural_operators_import",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "Module neural_cryptanalysis.neural_operators imported successfully"
+            },
+            {
+              "name": "neural_cryptanalysis.side_channels_import",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "Module neural_cryptanalysis.side_channels imported successfully"
+            },
+            {
+              "name": "neural_cryptanalysis.targets_import",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "Module neural_cryptanalysis.targets imported successfully"
+            },
+            {
+              "name": "neural_cryptanalysis.utils_import",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "Module neural_cryptanalysis.utils imported successfully"
+            }
+          ],
+          "summary": "Import validation: 100.0% success rate"
+        },
+        "core_functionality": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 1.0728836059570312e-05,
+          "tests": [
+            {
+              "name": "core_classes_available",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Core classes can be imported"
+            },
+            {
+              "name": "mock_data_processing",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Mock data processing completed"
+            }
+          ],
+          "summary": "Core functionality: 100.0% working"
+        },
+        "project_structure": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 0.0002701282501220703,
+          "tests": [
+            {
+              "name": "directory_src/neural_cryptanalysis",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory src/neural_cryptanalysis exists"
+            },
+            {
+              "name": "directory_src/neural_cryptanalysis/neural_operators",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory src/neural_cryptanalysis/neural_operators exists"
+            },
+            {
+              "name": "directory_src/neural_cryptanalysis/side_channels",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory src/neural_cryptanalysis/side_channels exists"
+            },
+            {
+              "name": "directory_src/neural_cryptanalysis/targets",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory src/neural_cryptanalysis/targets exists"
+            },
+            {
+              "name": "directory_src/neural_cryptanalysis/utils",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory src/neural_cryptanalysis/utils exists"
+            },
+            {
+              "name": "directory_tests",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory tests exists"
+            },
+            {
+              "name": "directory_examples",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory examples exists"
+            },
+            {
+              "name": "directory_docs",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required directory docs exists"
+            },
+            {
+              "name": "file_README.md",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required file README.md exists"
+            },
+            {
+              "name": "file_pyproject.toml",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required file pyproject.toml exists"
+            },
+            {
+              "name": "file_src/neural_cryptanalysis/__init__.py",
+              "passed": true,
+              "duration": 0.01,
+              "error": null,
+              "details": "Required file src/neural_cryptanalysis/__init__.py exists"
+            }
+          ],
+          "summary": "Project structure: 100.0% complete"
+        },
+        "security_baseline": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 0.0004563331604003906,
+          "tests": [
+            {
+              "name": "security_pickle_src/neural_cryptanalysis/optimization/research_acceleration.py",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "No unsafe pickle usage in src/neural_cryptanalysis/optimization/research_acceleration.py"
+            },
+            {
+              "name": "security_pickle_src/neural_cryptanalysis/pipeline/resilience.py",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "No unsafe pickle usage in src/neural_cryptanalysis/pipeline/resilience.py"
+            },
+            {
+              "name": "security_pickle_src/neural_cryptanalysis/utils/performance.py",
+              "passed": true,
+              "duration": 0.05,
+              "error": null,
+              "details": "No unsafe pickle usage in src/neural_cryptanalysis/utils/performance.py"
+            }
+          ],
+          "summary": "Security baseline: 100.0% secure"
+        }
+      },
+      "overall_passed": true,
+      "start_time": 1756305779.4563594,
+      "duration": 0.03379678726196289
+    },
+    "generation_2": {
+      "generation": 2,
+      "description": "Enhanced reliability and robustness",
+      "gates": {
+        "error_handling": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 3.814697265625e-06,
+          "tests": [
+            {
+              "name": "custom_exceptions",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Custom exception classes available"
+            }
+          ],
+          "summary": "Error handling: 100.0% robust"
+        },
+        "resilience": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 0.12371158599853516,
+          "tests": [
+            {
+              "name": "circuit_breaker_available",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Circuit breaker pattern implemented"
+            }
+          ],
+          "summary": "Resilience: 100.0% fault-tolerant"
+        },
+        "data_validation": {
+          "passed": false,
+          "score": 0.0,
+          "duration": 1.52587890625e-05,
+          "tests": [
+            {
+              "name": "data_validation_available",
+              "passed": false,
+              "duration": 0.1,
+              "error": "cannot import name 'validate_traces' from 'neural_cryptanalysis.utils.validation' (/root/repo/src/neural_cryptanalysis/utils/validation.py)",
+              "details": null
+            }
+          ],
+          "summary": "Data validation: 0.0% validated"
+        },
+        "configuration": {
+          "passed": true,
+          "score": 100.0,
+          "duration": 4.0531158447265625e-06,
+          "tests": [
+            {
+              "name": "config_management",
+              "passed": true,
+              "duration": 0.1,
+              "error": null,
+              "details": "Configuration management available"
+            }
+          ],
+          "summary": "Configuration: 100.0% managed"
+        }
+      },
+      "overall_passed": false,
+      "start_time": 1756305779.4901674,
+      "duration": 0.1238100528717041
+    }
+  },
+  "overall_success": false,
+  "final_generation": 1,
+  "security_validated": true,
+  "production_ready": false,
+  "duration": 0.15762758255004883,
+  "research_capabilities": {
+    "score": 50.0,
+    "capabilities": {
+      "fourier_neural_operators": true,
+      "side_channel_analysis": true,
+      "cryptographic_targets": false,
+      "adaptive_attacks": false
+    },
+    "validated": false
+  }
+}

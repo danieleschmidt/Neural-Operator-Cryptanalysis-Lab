@@ -25,6 +25,16 @@ class CountermeasureType(Enum):
 
 
 @dataclass
+class TargetConfig:
+    """Base configuration for cryptographic targets."""
+    name: str = "default"
+    target_type: TargetType = TargetType.SYMMETRIC
+    key_size: int = 128
+    countermeasures: List[CountermeasureType] = field(default_factory=list)
+    implementation_specific: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass  
 class ImplementationConfig:
     """Configuration for cryptographic implementations.
     

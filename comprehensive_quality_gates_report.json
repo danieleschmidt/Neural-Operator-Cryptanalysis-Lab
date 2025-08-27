@@ -1,0 +1,145 @@
+{
+  "timestamp": 1756305180.5076525,
+  "execution_time_seconds": 1.2519853115081787,
+  "overall_status": "FAILED",
+  "overall_score": 40.0,
+  "statistics": {
+    "total_gates": 10,
+    "passed_gates": 4,
+    "failed_gates": 6,
+    "critical_gates": 7,
+    "critical_passed": 2,
+    "critical_failed": 5
+  },
+  "scores": {
+    "overall_score": 40.0,
+    "critical_score": 28.57142857142857
+  },
+  "gate_results": [
+    {
+      "name": "Import Validation",
+      "passed": true,
+      "score": 100.0,
+      "execution_time": 0.48088955879211426,
+      "critical": true,
+      "error_message": ""
+    },
+    {
+      "name": "Test Coverage",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.5277600288391113,
+      "critical": true,
+      "error_message": ""
+    },
+    {
+      "name": "Unit Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.0729527473449707,
+      "critical": true,
+      "error_message": "/usr/bin/python3: No module named pytest\n"
+    },
+    {
+      "name": "Integration Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.06819701194763184,
+      "critical": true,
+      "error_message": "/usr/bin/python3: No module named pytest\n"
+    },
+    {
+      "name": "Performance Regression",
+      "passed": true,
+      "score": 100.0,
+      "execution_time": 0.6886751651763916,
+      "critical": false,
+      "error_message": ""
+    },
+    {
+      "name": "Performance Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.06996345520019531,
+      "critical": false,
+      "error_message": "/usr/bin/python3: No module named pytest\n"
+    },
+    {
+      "name": "Security Tests",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.06399250030517578,
+      "critical": true,
+      "error_message": "/usr/bin/python3: No module named pytest\n"
+    },
+    {
+      "name": "Research Quality Gates",
+      "passed": false,
+      "score": 0.0,
+      "execution_time": 0.06938600540161133,
+      "critical": true,
+      "error_message": "/usr/bin/python3: No module named pytest\n"
+    },
+    {
+      "name": "Documentation Check",
+      "passed": true,
+      "score": 100.0,
+      "execution_time": 0.4266183376312256,
+      "critical": false,
+      "error_message": ""
+    },
+    {
+      "name": "Security Check",
+      "passed": true,
+      "score": 100.0,
+      "execution_time": 1.246004581451416,
+      "critical": true,
+      "error_message": ""
+    }
+  ],
+  "failed_gates": [
+    {
+      "name": "Test Coverage",
+      "critical": true,
+      "error": "",
+      "details": {}
+    },
+    {
+      "name": "Unit Tests",
+      "critical": true,
+      "error": "/usr/bin/python3: No module named pytest\n",
+      "details": {}
+    },
+    {
+      "name": "Integration Tests",
+      "critical": true,
+      "error": "/usr/bin/python3: No module named pytest\n",
+      "details": {}
+    },
+    {
+      "name": "Performance Tests",
+      "critical": false,
+      "error": "/usr/bin/python3: No module named pytest\n",
+      "details": {}
+    },
+    {
+      "name": "Security Tests",
+      "critical": true,
+      "error": "/usr/bin/python3: No module named pytest\n",
+      "details": {}
+    },
+    {
+      "name": "Research Quality Gates",
+      "critical": true,
+      "error": "/usr/bin/python3: No module named pytest\n",
+      "details": {}
+    }
+  ],
+  "recommendations": [
+    "Fix critical quality gate failures before proceeding to production",
+    "High failure rate indicates systematic quality issues",
+    "Address security vulnerabilities before deployment",
+    "Increase test coverage to meet quality standards",
+    "Investigate performance regressions and optimize where needed"
+  ]
+}
