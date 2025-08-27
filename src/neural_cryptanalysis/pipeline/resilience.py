@@ -16,7 +16,7 @@ Key Features:
 import asyncio
 import json
 import logging
-import pickle
+import json
 import random
 import time
 import threading
@@ -613,6 +613,32 @@ class DisasterRecovery:
         
         self.logger = logging.getLogger(__name__)
     
+    def _serialize_safely(self, data: Any) -> Any:
+        """Safely serialize data for JSON storage."""
+        import base64
+        
+        if isinstance(data, bytes):
+            return {'type': 'bytes', 'data': base64.b64encode(data).decode('utf-8')}
+        elif hasattr(data, '__dict__') and hasattr(data, '__class__'):
+            # Handle objects
+            try:
+                return {
+                    'type': 'object',
+                    'class': data.__class__.__name__,
+                    'data': {k: self._serialize_safely(v) for k, v in data.__dict__.items()}
+                }
+            except Exception:
+                return {'type': 'string', 'data': str(data)}
+        elif isinstance(data, (list, tuple)):
+            return {'type': 'list' if isinstance(data, list) else 'tuple', 
+                    'data': [self._serialize_safely(item) for item in data]}
+        elif isinstance(data, dict):
+            return {k: self._serialize_safely(v) for k, v in data.items()}
+        elif isinstance(data, (str, int, float, bool, type(None))):
+            return data
+        else:
+            return {'type': 'string', 'data': str(data)}
+    
     def register_backup_strategy(self, data_type: str, backup_func: Callable) -> None:
         """Register a backup strategy for a data type."""
         self.backup_strategies[data_type] = backup_func
@@ -634,13 +660,16 @@ class DisasterRecovery:
         try:
             backup_data = self.backup_strategies[data_type](data)
             
-            with open(backup_path, 'wb') as f:
-                pickle.dump({
-                    'data_type': data_type,
-                    'backup_id': backup_id,
-                    'created_at': datetime.now(),
-                    'data': backup_data
-                }, f)
+            # Use secure JSON serialization instead of pickle
+            backup_json = {
+                'data_type': data_type,
+                'backup_id': backup_id,
+                'created_at': datetime.now().isoformat(),
+                'data': self._serialize_safely(backup_data)
+            }
+            
+            with open(backup_path.with_suffix('.json'), 'w') as f:
+                json.dump(backup_json, f, indent=2)
             
             self.logger.info(f"Created backup '{backup_id}' at {backup_path}")
             return backup_id
@@ -657,8 +686,13 @@ class DisasterRecovery:
             raise FileNotFoundError(f"Backup '{backup_id}' not found")
         
         try:
-            with open(backup_path, 'rb') as f:
-                backup_info = pickle.load(f)
+            # Load from JSON format
+            json_path = backup_path.with_suffix('.json')
+            if json_path.exists():
+                with open(json_path, 'r') as f:
+                    backup_info = json.load(f)
+            else:
+                raise FileNotFoundError(f"Backup '{backup_id}' not found in JSON format")
             
             data_type = backup_info['data_type']
             backup_data = backup_info['data']
@@ -680,8 +714,13 @@ class DisasterRecovery:
         
         for backup_file in self.backup_dir.glob("*.backup"):
             try:
-                with open(backup_file, 'rb') as f:
-                    backup_info = pickle.load(f)
+                # Load from JSON format
+                json_file = backup_file.with_suffix('.json')
+                if json_file.exists():
+                    with open(json_file, 'r') as f:
+                        backup_info = json.load(f)
+                else:
+                    continue  # Skip non-JSON backup files
                 
                 backups.append({
                     'backup_id': backup_info['backup_id'],

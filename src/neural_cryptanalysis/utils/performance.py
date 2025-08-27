@@ -5,7 +5,8 @@ import psutil
 import threading
 from typing import Dict, List, Any, Optional, Callable, Tuple
 from pathlib import Path
-import pickle
+import json
+import base64
 import hashlib
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -184,6 +185,43 @@ class CacheManager:
         
         logger.info(f"Cache initialized: {self.cache_dir}, max_size: {max_size_mb}MB")
     
+    def _serialize_safely(self, data: Any) -> Any:
+        """Safely serialize data for JSON storage."""
+        if isinstance(data, bytes):
+            return {'type': 'bytes', 'data': base64.b64encode(data).decode('utf-8')}
+        elif hasattr(data, '__dict__'):
+            try:
+                return {
+                    'type': 'object',
+                    'class': data.__class__.__name__,
+                    'data': {k: self._serialize_safely(v) for k, v in data.__dict__.items()}
+                }
+            except Exception:
+                return {'type': 'string', 'data': str(data)}
+        elif isinstance(data, (list, tuple)):
+            return [self._serialize_safely(item) for item in data]
+        elif isinstance(data, dict):
+            return {k: self._serialize_safely(v) for k, v in data.items()}
+        elif isinstance(data, (str, int, float, bool, type(None))):
+            return data
+        else:
+            return {'type': 'string', 'data': str(data)}
+    
+    def _deserialize_safely(self, data: Any) -> Any:
+        """Safely deserialize data from JSON storage."""
+        if isinstance(data, dict) and 'type' in data:
+            if data['type'] == 'bytes':
+                return base64.b64decode(data['data'])
+            elif data['type'] == 'string':
+                return data['data']
+            elif data['type'] == 'object':
+                return data['data']  # Return dict representation
+        elif isinstance(data, list):
+            return [self._deserialize_safely(item) for item in data]
+        elif isinstance(data, dict):
+            return {k: self._deserialize_safely(v) for k, v in data.items()}
+        return data
+    
     def get(self, key: str, default: Any = None) -> Any:
         """Get item from cache.
         
@@ -210,8 +248,10 @@ class CacheManager:
                     return default
             
             try:
-                with open(cache_path, 'rb') as f:
-                    data = pickle.load(f)
+                # Use secure JSON deserialization
+                with open(cache_path, 'r') as f:
+                    cached_data = json.load(f)
+                    data = self._deserialize_safely(cached_data)
                 
                 logger.debug(f"Cache hit: {key}")
                 return data
@@ -236,8 +276,9 @@ class CacheManager:
                 cache_path = self._get_cache_path(key)
                 
                 # Serialize data
-                with open(cache_path, 'wb') as f:
-                    pickle.dump(value, f)
+                # Use secure JSON serialization
+                with open(cache_path, 'w') as f:
+                    json.dump(self._serialize_safely(value), f, indent=2)
                 
                 # Update index
                 file_size = cache_path.stat().st_size

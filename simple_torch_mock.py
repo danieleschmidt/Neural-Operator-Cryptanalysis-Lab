@@ -630,3 +630,10 @@ class MockInit:
 
 torch_mock.nn.init = MockInit()
 sys.modules['torch.nn.init'] = MockInit()
+
+# Add Tensor as an alias to MockTensor
+torch_mock.Tensor = MockTensor
+torch_mock.tensor = lambda *args, **kwargs: MockTensor(*args, **kwargs)
+
+# Export commonly used attributes
+__all__ = ['MockTensor', 'torch_mock']
